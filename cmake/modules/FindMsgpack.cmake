@@ -5,13 +5,24 @@
 #  MSGPACK_LIBRARIES - The libraries needed to use msgpack
 
 # if(NOT USE_BUNDLED_MSGPACK)
-  find_package(PkgConfig)
-  if (PKG_CONFIG_FOUND)
-    message("Found!")
-    pkg_search_module(PC_MSGPACK QUIET
-      msgpackc>=${Msgpack_FIND_VERSION}
-      msgpack>=${Msgpack_FIND_VERSION})
-  endif()
+  # find_package(PkgConfig)
+  # if (PKG_CONFIG_FOUND)
+  #   pkg_search_module(PC_MSGPACK QUIET
+  #     msgpackc>=${Msgpack_FIND_VERSION}
+  #     msgpack>=${Msgpack_FIND_VERSION})
+  # endif()
+  include(FindPkgConfig)
+  pkg_check_modules(PC_MSGPACK "msgpackc")
+  if (NOT PC_MSGPACK_FOUND)
+      pkg_check_modules(PC_MSGPACK "msgpackc-static")
+  endif (NOT PC_MSGPACK_FOUND)
+  if (PC_MSGPACK_FOUND)
+      # some libraries install the headers is a subdirectory of the include dir
+      # returned by pkg-config, so use a wildcard match to improve chances of finding
+      # headers and SOs.
+      set(PC_MSGPACK_INCLUDE_HINTS ${PC_MSGPACK_INCLUDE_DIRS} ${PC_MSGPACK_INCLUDE_DIRS}/*)
+      set(PC_MSGPACK_LIBRARY_HINTS ${PC_MSGPACK_LIBRARY_DIRS} ${PC_MSGPACK_LIBRARY_DIRS}/*)
+  endif(PC_MSGPACK_FOUND)
 # else()
 #   set(PC_MSGPACK_INCLUDEDIR)
 #   set(PC_MSGPACK_INCLUDE_DIRS)
