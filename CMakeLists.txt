@@ -54,7 +54,7 @@ add_library(zmq INTERFACE IMPORTED)
 set_property(TARGET zmq PROPERTY
   INTERFACE_INCLUDE_DIRECTORIES ${ZMQ_INCLUDE_DIR})
 set_property(TARGET zmq PROPERTY
-  INTERFACE_LINK_LIBRARIES ${ZMQ_LIBRARY})
+  INTERFACE_LINK_LIBRARIES ${ZMQ_LIBRARY} -lzmq)
 
 
 ########################################################################
@@ -67,7 +67,8 @@ add_library(czmq INTERFACE IMPORTED)
 set_property(TARGET czmq PROPERTY
   INTERFACE_INCLUDE_DIRECTORIES ${CZMQ_INCLUDE_DIR})
 set_property(TARGET czmq PROPERTY
-  INTERFACE_LINK_LIBRARIES ${CZMQ_LIBRARY})
+  INTERFACE_LINK_LIBRARIES ${CZMQ_LIBRARY} -lczmq)
+
 
 #///////////////////////////////////////////////////////////////////#
 #                        COMPILATION OPTIONS                        #
