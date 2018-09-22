@@ -4,20 +4,20 @@
 #  MSGPACK_INCLUDE_DIRS - The msgpack include directories
 #  MSGPACK_LIBRARIES - The libraries needed to use msgpack
 
-if(NOT USE_BUNDLED_MSGPACK)
-  find_package(PkgConfig)
-  if (PKG_CONFIG_FOUND)
-    pkg_search_module(PC_MSGPACK QUIET
-      msgpackc>=${Msgpack_FIND_VERSION}
-      msgpack>=${Msgpack_FIND_VERSION})
-  endif()
-else()
-  set(PC_MSGPACK_INCLUDEDIR)
-  set(PC_MSGPACK_INCLUDE_DIRS)
-  set(PC_MSGPACK_LIBDIR)
-  set(PC_MSGPACK_LIBRARY_DIRS)
-  set(LIMIT_SEARCH NO_DEFAULT_PATH)
+# if(NOT USE_BUNDLED_MSGPACK)
+find_package(PkgConfig)
+if (PKG_CONFIG_FOUND)
+  pkg_search_module(PC_MSGPACK QUIET
+    msgpackc>=${Msgpack_FIND_VERSION}
+    msgpack>=${Msgpack_FIND_VERSION})
 endif()
+# else()
+#   set(PC_MSGPACK_INCLUDEDIR)
+#   set(PC_MSGPACK_INCLUDE_DIRS)
+#   set(PC_MSGPACK_LIBDIR)
+#   set(PC_MSGPACK_LIBRARY_DIRS)
+#   set(LIMIT_SEARCH NO_DEFAULT_PATH)
+# endif()
 
 set(MSGPACK_DEFINITIONS ${PC_MSGPACK_CFLAGS_OTHER})
 
