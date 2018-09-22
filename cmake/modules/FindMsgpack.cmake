@@ -5,12 +5,13 @@
 #  MSGPACK_LIBRARIES - The libraries needed to use msgpack
 
 # if(NOT USE_BUNDLED_MSGPACK)
-find_package(PkgConfig)
-if (PKG_CONFIG_FOUND)
-  pkg_search_module(PC_MSGPACK QUIET
-    msgpackc>=${Msgpack_FIND_VERSION}
-    msgpack>=${Msgpack_FIND_VERSION})
-endif()
+  find_package(PkgConfig)
+  if (PKG_CONFIG_FOUND)
+    message("Found!")
+    pkg_search_module(PC_MSGPACK QUIET
+      msgpackc>=${Msgpack_FIND_VERSION}
+      msgpack>=${Msgpack_FIND_VERSION})
+  endif()
 # else()
 #   set(PC_MSGPACK_INCLUDEDIR)
 #   set(PC_MSGPACK_INCLUDE_DIRS)
