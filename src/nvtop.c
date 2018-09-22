@@ -276,7 +276,7 @@ int main (int argc, char **argv) {
     char* device_num;
     // zframe_t *frame = zframe_new ("Hello", 5);
     zmsg_pushstr(msg, hostname);
-    for(int dev = 0; dev < 0; dev++) {
+    for(int dev = 0; dev < num_devices; dev++) {
       // zmsg_addmem(msg, dev);
       asprintf (&device_num, "%d", dev);
       zmsg_addstr(msg, device_num);
