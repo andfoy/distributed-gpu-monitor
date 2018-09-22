@@ -1,4 +1,4 @@
-# - Try to find ZMQ
+# - Try to find CZMQ
 # Once done this will define
 # CZMQ_FOUND - System has ZMQ
 # CZMQ_INCLUDE_DIRS - The ZMQ include directories
