@@ -275,6 +275,8 @@ int main (int argc, char **argv) {
     zmsg_t *msg = zmsg_new();
     char* device_num;
     char* free_memory_str;
+    char* used_memory_str;
+    char* total_memory_str;
     // zframe_t *frame = zframe_new ("Hello", 5);
     zmsg_pushstr(msg, hostname);
     for(int dev = 0; dev < num_devices; dev++) {
@@ -284,6 +286,10 @@ int main (int argc, char **argv) {
       zmsg_addstr(submsg, device_num);
       asprintf (&free_memory_str, "%llu", dev_infos[dev].free_memory);
       zmsg_addstr(submsg, free_memory_str);
+      asprintf (&used_memory_str, "%llu", dev_infos[dev].used_memory);
+      zmsg_addstr(submsg, used_memory_str);
+      asprintf (&total_memory_str, "%llu", dev_infos[dev].total_memory);
+      zmsg_addstr(submsg, total_memory_str);
       zmsg_addmsg (msg, &submsg);
       // zmsg_addstr(msg, "END");
       // zstr_send (push_sock, hostname);
