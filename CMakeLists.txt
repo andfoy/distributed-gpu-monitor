@@ -57,6 +57,11 @@ set_property(TARGET ncurses PROPERTY
 #ENDIF (LIBZMQ_FOUND)
 find_package ( ZMQ REQUIRED )
 include_directories ( ${ZMQ_INCLUDE_DIR} )
+add_library(ZMQ INTERFACE IMPORTED)
+set_property(TARGET ZMQ PROPERTY
+  INTERFACE_INCLUDE_DIRECTORIES ${ZMQ_INCLUDE_DIRS})
+set_property(TARGET ZMQ PROPERTY
+  INTERFACE_LINK_LIBRARIES ${ZMQ_LIBRARIES})
 
 
 ########################################################################
@@ -72,6 +77,11 @@ include_directories ( ${ZMQ_INCLUDE_DIR} )
 
 find_package ( CZMQ REQUIRED )
 include_directories ( ${CZMQ_INCLUDE_DIR} )
+add_library(CZMQ INTERFACE IMPORTED)
+set_property(TARGET CZMQ PROPERTY
+  INTERFACE_INCLUDE_DIRECTORIES ${CZMQ_INCLUDE_DIRS})
+set_property(TARGET CZMQ PROPERTY
+  INTERFACE_LINK_LIBRARIES ${CZMQ_LIBRARIES})
 
 #///////////////////////////////////////////////////////////////////#
 #                        COMPILATION OPTIONS                        #
