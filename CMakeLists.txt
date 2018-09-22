@@ -81,12 +81,12 @@ set_property(TARGET ncurses PROPERTY
 # Msgpack dependency
 ########################################################################
 # find_package(msgpack REQUIRED)
-find_package(Msgpack REQUIRED)
-add_library(Msgpack INTERFACE IMPORTED)
-set_property(TARGET Msgpack PROPERTY
-INTERFACE_INCLUDE_DIRECTORIES ${MSGPACK_INCLUDE_DIRS})
-set_property(TARGET Msgpack PROPERTY
-INTERFACE_LINK_LIBRARIES ${MSGPACK_LIBRARIES})
+# find_package(Msgpack REQUIRED)
+# add_library(Msgpack INTERFACE IMPORTED)
+# set_property(TARGET Msgpack PROPERTY
+# INTERFACE_INCLUDE_DIRECTORIES ${MSGPACK_INCLUDE_DIRS})
+# set_property(TARGET Msgpack PROPERTY
+# INTERFACE_LINK_LIBRARIES ${MSGPACK_LIBRARIES})
 # IF (MSGPACK_FOUND)
 #     add_library(msgpack INTERFACE IMPORTED)
 #     set_property(TARGET msgpack PROPERTY

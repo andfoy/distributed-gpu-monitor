@@ -26,7 +26,7 @@
 #include <ncurses.h>
 #include <getopt.h>
 #include <string.h>
-#include <msgpack.h>
+// #include <msgpack.h>
 
 #include <locale.h>
 #include <czmq.h>
