@@ -48,18 +48,18 @@ set_property(TARGET ncurses PROPERTY
   ########################################################################
   # LIBZMQ dependency
   ########################################################################
-  find_package(libzmq REQUIRED)
-  IF (LIBZMQ_FOUND)
-      add_library(libzmq INTERFACE IMPORTED)
-      # include_directories(${LIBZMQ_INCLUDE_DIRS})
-      # list(APPEND MORE_LIBRARIES ${LIBZMQ_LIBRARIES})
-      set_property(TARGET libzmq PROPERTY
-      INTERFACE_INCLUDE_DIRECTORIES ${LIBZMQ_INCLUDE_DIRS})
-      set_property(TARGET libzmq PROPERTY
-        INTERFACE_LINK_LIBRARIES ${LIBZMQ_LIBRARIES})
-  ELSE (LIBZMQ_FOUND)
-      message( FATAL_ERROR "libzmq not found." )
-  ENDIF (LIBZMQ_FOUND)
+  # find_package(libzmq REQUIRED)
+  # IF (LIBZMQ_FOUND)
+  #     add_library(libzmq INTERFACE IMPORTED)
+  #     # include_directories(${LIBZMQ_INCLUDE_DIRS})
+  #     # list(APPEND MORE_LIBRARIES ${LIBZMQ_LIBRARIES})
+  #     set_property(TARGET libzmq PROPERTY
+  #     INTERFACE_INCLUDE_DIRECTORIES ${LIBZMQ_INCLUDE_DIRS})
+  #     set_property(TARGET libzmq PROPERTY
+  #       INTERFACE_LINK_LIBRARIES ${LIBZMQ_LIBRARIES})
+  # ELSE (LIBZMQ_FOUND)
+  #     message( FATAL_ERROR "libzmq not found." )
+  # ENDIF (LIBZMQ_FOUND)
 
   ########################################################################
   # CZMQ dependency
