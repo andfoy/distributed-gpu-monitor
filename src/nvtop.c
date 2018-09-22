@@ -313,6 +313,7 @@ int main (int argc, char **argv) {
   clean_ncurses(interface);
   clean_device_info(num_devices, dev_infos);
   shutdown_gpu_info_extraction();
+  zsock_destroy (&req_sock);
 
   return EXIT_SUCCESS;
 }
