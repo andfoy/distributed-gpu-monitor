@@ -80,18 +80,19 @@ set_property(TARGET ncurses PROPERTY
 ########################################################################
 # Msgpack dependency
 ########################################################################
-find_package(msgpack REQUIRED)
-IF (MSGPACK_FOUND)
-    add_library(msgpack INTERFACE IMPORTED)
-    set_property(TARGET msgpack PROPERTY
-    INTERFACE_INCLUDE_DIRECTORIES ${MSGPACK_INCLUDE_DIRS})
-    set_property(TARGET msgpack PROPERTY
-    INTERFACE_LINK_LIBRARIES ${MSGPACK_LIBRARIES})
-    # include_directories(${CZMQ_INCLUDE_DIRS})
-    # list(APPEND MORE_LIBRARIES ${CZMQ_LIBRARIES})
-ELSE (MSGPACK_FOUND)
-    message( FATAL_ERROR "msgpack not found." )
-ENDIF (MSGPACK_FOUND)
+# find_package(msgpack REQUIRED)
+find_package(Msgpack REQUIRED)
+# IF (MSGPACK_FOUND)
+#     add_library(msgpack INTERFACE IMPORTED)
+#     set_property(TARGET msgpack PROPERTY
+#     INTERFACE_INCLUDE_DIRECTORIES ${MSGPACK_INCLUDE_DIRS})
+#     set_property(TARGET msgpack PROPERTY
+#     INTERFACE_LINK_LIBRARIES ${MSGPACK_LIBRARIES})
+#     # include_directories(${CZMQ_INCLUDE_DIRS})
+#     # list(APPEND MORE_LIBRARIES ${CZMQ_LIBRARIES})
+# ELSE (MSGPACK_FOUND)
+#     message( FATAL_ERROR "msgpack not found." )
+# ENDIF (MSGPACK_FOUND)
 
 
 #///////////////////////////////////////////////////////////////////#
