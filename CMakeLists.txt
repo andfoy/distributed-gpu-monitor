@@ -45,27 +45,29 @@ set_property(TARGET ncurses PROPERTY
   INTERFACE_LINK_LIBRARIES ${CURSES_LIBRARIES})
 
 
-########################################################################
-# LIBZMQ dependency
-########################################################################
-find_package(libzmq REQUIRED)
-IF (LIBZMQ_FOUND)
-    include_directories(${LIBZMQ_INCLUDE_DIRS})
-    list(APPEND MORE_LIBRARIES ${LIBZMQ_LIBRARIES})
-ELSE (LIBZMQ_FOUND)
-    message( FATAL_ERROR "libzmq not found." )
-ENDIF (LIBZMQ_FOUND)
+  ########################################################################
+  # LIBZMQ dependency
+  ########################################################################
+  find_package(libzmq REQUIRED)
+  IF (LIBZMQ_FOUND)
+      include_directories(${LIBZMQ_INCLUDE_DIRS})
+      list(APPEND MORE_LIBRARIES ${LIBZMQ_LIBRARIES})
+      set(pkg_config_libs_private "${pkg_config_libs_private} -lzmq")
+  ELSE (LIBZMQ_FOUND)
+      message( FATAL_ERROR "libzmq not found." )
+  ENDIF (LIBZMQ_FOUND)
 
-########################################################################
-# CZMQ dependency
-########################################################################
-find_package(czmq REQUIRED)
-IF (CZMQ_FOUND)
-    include_directories(${CZMQ_INCLUDE_DIRS})
-    list(APPEND MORE_LIBRARIES ${CZMQ_LIBRARIES})
-ELSE (CZMQ_FOUND)
-    message( FATAL_ERROR "czmq not found." )
-ENDIF (CZMQ_FOUND)
+  ########################################################################
+  # CZMQ dependency
+  ########################################################################
+  find_package(czmq REQUIRED)
+  IF (CZMQ_FOUND)
+      include_directories(${CZMQ_INCLUDE_DIRS})
+      list(APPEND MORE_LIBRARIES ${CZMQ_LIBRARIES})
+      set(pkg_config_libs_private "${pkg_config_libs_private} -lczmq")
+  ELSE (CZMQ_FOUND)
+      message( FATAL_ERROR "czmq not found." )
+  ENDIF (CZMQ_FOUND)
 
 
 
