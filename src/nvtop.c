@@ -272,11 +272,15 @@ int main (int argc, char **argv) {
       update_window_size_to_terminal_size(interface);
       signal_bits &= ~RESIZE_SIGNAL;
     }
-    zmsg_t *msg = zmsg_new ();
+    zmsg_t *msg = zmsg_new();
+    char* device_num;
+    // zframe_t *frame = zframe_new ("Hello", 5);
     zmsg_pushstr(msg, hostname);
     for(int dev = 0; dev < 0; dev++) {
-      zmsg_addmem(msg, dev);
-      zmsg_addstr(msg, "END");
+      // zmsg_addmem(msg, dev);
+      asprintf (&device_num, "%d", dev);
+      zmsg_addstr(msg, device_num);
+      // zmsg_addstr(msg, "END");
       // zstr_send (push_sock, hostname);
     }
     draw_gpu_info_ncurses(dev_infos, interface);
