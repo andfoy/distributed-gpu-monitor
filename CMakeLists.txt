@@ -70,6 +70,9 @@ include_directories ( ${ZMQ_INCLUDE_DIR} )
 #    message( FATAL_ERROR "czmq not found." )
 #ENDIF (CZMQ_FOUND)
 
+find_package ( CZMQ REQUIRED )
+include_directories ( ${CZMQ_INCLUDE_DIR} )
+
 #///////////////////////////////////////////////////////////////////#
 #                        COMPILATION OPTIONS                        #
 #///////////////////////////////////////////////////////////////////#
