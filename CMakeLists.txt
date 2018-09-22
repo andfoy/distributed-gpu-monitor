@@ -52,9 +52,9 @@ find_package ( ZMQ REQUIRED )
 include_directories ( ${ZMQ_INCLUDE_DIR} )
 add_library(zmq INTERFACE IMPORTED)
 set_property(TARGET zmq PROPERTY
-  INTERFACE_INCLUDE_DIRECTORIES ${ZMQ_INCLUDE_DIRS})
+  INTERFACE_INCLUDE_DIRECTORIES ${ZMQ_INCLUDE_DIR})
 set_property(TARGET zmq PROPERTY
-  INTERFACE_LINK_LIBRARIES ${ZMQ_LIBRARIES})
+  INTERFACE_LINK_LIBRARIES ${ZMQ_LIBRARY})
 
 
 ########################################################################
@@ -65,9 +65,9 @@ find_package ( CZMQ REQUIRED )
 include_directories ( ${CZMQ_INCLUDE_DIR} )
 add_library(czmq INTERFACE IMPORTED)
 set_property(TARGET czmq PROPERTY
-  INTERFACE_INCLUDE_DIRECTORIES ${CZMQ_INCLUDE_DIRS})
+  INTERFACE_INCLUDE_DIRECTORIES ${CZMQ_INCLUDE_DIR})
 set_property(TARGET czmq PROPERTY
-  INTERFACE_LINK_LIBRARIES ${CZMQ_LIBRARIES})
+  INTERFACE_LINK_LIBRARIES ${CZMQ_LIBRARY})
 
 #///////////////////////////////////////////////////////////////////#
 #                        COMPILATION OPTIONS                        #
