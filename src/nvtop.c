@@ -283,6 +283,7 @@ int main (int argc, char **argv) {
       // zmsg_addstr(msg, "END");
       // zstr_send (push_sock, hostname);
     }
+    zmsg_send (&msg, push_sock);
     draw_gpu_info_ncurses(dev_infos, interface);
 
     int input_char = getch();
