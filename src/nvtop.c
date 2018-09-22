@@ -259,7 +259,7 @@ int main (int argc, char **argv) {
   timeout(refresh_interval);
 
   char server_endpoint[40];
-  sprintf(server_endpoint, "inproc://%s:6587", server_hostname);
+  sprintf(server_endpoint, "tcp://%s:6587", server_hostname);
   zsock_t *req_sock = zsock_new_req(server_endpoint);
   while (!(signal_bits & STOP_SIGNAL)) {
     update_device_infos(num_devices, dev_infos);
