@@ -66,8 +66,13 @@ set_property(TARGET ncurses PROPERTY
   ########################################################################
   find_package(czmq REQUIRED)
   IF (CZMQ_FOUND)
-      include_directories(${CZMQ_INCLUDE_DIRS})
-      list(APPEND MORE_LIBRARIES ${CZMQ_LIBRARIES})
+      add_library(czmq INTERFACE IMPORTED)
+      set_property(TARGET czmq PROPERTY
+        INTERFACE_INCLUDE_DIRECTORIES ${CZMQ_INCLUDE_DIRS})
+      set_property(TARGET czmq PROPERTY
+        INTERFACE_LINK_LIBRARIES ${CZMQ_LIBRARIES})
+      # include_directories(${CZMQ_INCLUDE_DIRS})
+      # list(APPEND MORE_LIBRARIES ${CZMQ_LIBRARIES})
   ELSE (CZMQ_FOUND)
       message( FATAL_ERROR "czmq not found." )
   ENDIF (CZMQ_FOUND)
