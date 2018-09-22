@@ -56,9 +56,6 @@ set_property(TARGET zmq PROPERTY
 set_property(TARGET zmq PROPERTY
   INTERFACE_LINK_LIBRARIES ${ZMQ_LIBRARY})
 
-set_property(TARGET p::zeromq PROPERTY INTERFACE_LINK_LIBRARIES ${ZMQ_LIBRARY})
-set_property(TARGET p::zeromq PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${ZMQ_INCLUDE_DIR}")
-
 
 ########################################################################
 # CZMQ dependency
@@ -70,10 +67,8 @@ add_library(czmq INTERFACE IMPORTED)
 set_property(TARGET czmq PROPERTY
   INTERFACE_INCLUDE_DIRECTORIES ${CZMQ_INCLUDE_DIR})
 set_property(TARGET czmq PROPERTY
-  INTERFACE_LINK_LIBRARIES ${CZMQ_LIBRARY})
+  INTERFACE_LINK_LIBRARIES ${CZMQ_LIBRARY} -lczmq)
 
-set_property(TARGET p::czmq PROPERTY INTERFACE_LINK_LIBRARIES ${CZMQ_LIBRARY})
-set_property(TARGET p::czmq PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${CZMQ_INCLUDE_DIR}")
 
 #///////////////////////////////////////////////////////////////////#
 #                        COMPILATION OPTIONS                        #
