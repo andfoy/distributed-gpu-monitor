@@ -173,6 +173,7 @@ int main (int argc, char **argv) {
         break;
       case 'r':
         server_hostname = optarg;
+        printf("%s\n", server_hostname);
         break;
       case 's':
         selectedGPU = optarg;
