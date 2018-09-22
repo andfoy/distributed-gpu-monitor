@@ -112,7 +112,7 @@ static const struct option long_opts[] = {
   {0,0,0,0},
 };
 
-static const char opts[] = "hvd:s:i:C:r";
+static const char opts[] = "hvd:r:s:i:C";
 
 static size_t update_mask_value(const char *str, size_t entry_mask, bool addTo) {
   char *saveptr;
@@ -171,6 +171,10 @@ int main (int argc, char **argv) {
           refresh_interval = (int) delay_val * 100u;
         }
         break;
+      case 'r':
+        server_hostname = optarg;
+        printf("%s\n",) server_hostname;
+        break;
       case 's':
         selectedGPU = optarg;
         break;
@@ -185,10 +189,6 @@ int main (int argc, char **argv) {
         exit(EXIT_SUCCESS);
       case 'C':
         use_color_if_available = false;
-        break;
-      case 'r':
-        server_hostname = optarg;
-        printf("%s\n", server_hostname);
         break;
       case ':':
       case '?':
