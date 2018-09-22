@@ -28,6 +28,7 @@
 #include <string.h>
 
 #include <locale.h>
+#include <czmq.h>
 
 #include "nvtop/interface.h"
 #include "nvtop/version.h"
@@ -102,6 +103,12 @@ static const struct option long_opts[] = {
     .flag = NULL,
     .val = 'i'
   },
+  {
+    .name = "remote-server",
+    .has_arg = required_argument,
+    .flag = NULL,
+    .val = 'r'
+  }
   {0,0,0,0},
 };
 
@@ -143,6 +150,7 @@ int main (int argc, char **argv) {
   char *selectedGPU = NULL;
   char *ignoredGPU = NULL;
   bool use_color_if_available = true;
+  char *server_hostname = "localhost";
   while (true) {
     char optchar = getopt_long(argc, argv, opts, long_opts, NULL);
     if (optchar == -1)
@@ -162,6 +170,9 @@ int main (int argc, char **argv) {
           }
           refresh_interval = (int) delay_val * 100u;
         }
+        break;
+      case 'r':
+        server_hostname = optarg;
         break;
       case 's':
         selectedGPU = optarg;
@@ -246,12 +257,16 @@ int main (int argc, char **argv) {
     initialize_curses(num_devices, biggest_name, use_color_if_available);
   timeout(refresh_interval);
 
+  char server_endpoint[40];
+  sprintf(server_endpoint, "inproc://%s:6587", server_hostname);
+  zsock_t *req_sock = zsock_new_req(server_endpoint);
   while (!(signal_bits & STOP_SIGNAL)) {
     update_device_infos(num_devices, dev_infos);
     if (signal_bits & RESIZE_SIGNAL) {
       update_window_size_to_terminal_size(interface);
       signal_bits &= ~RESIZE_SIGNAL;
     }
+    zstr_send (push, "GPU Info!");
     draw_gpu_info_ncurses(dev_infos, interface);
 
     int input_char = getch();
