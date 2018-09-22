@@ -108,7 +108,7 @@ static const struct option long_opts[] = {
     .has_arg = required_argument,
     .flag = NULL,
     .val = 'r'
-  }
+  },
   {0,0,0,0},
 };
 
@@ -266,7 +266,7 @@ int main (int argc, char **argv) {
       update_window_size_to_terminal_size(interface);
       signal_bits &= ~RESIZE_SIGNAL;
     }
-    zstr_send (push, "GPU Info!");
+    zstr_send (req_sock, "GPU Info!");
     draw_gpu_info_ncurses(dev_infos, interface);
 
     int input_char = getch();
