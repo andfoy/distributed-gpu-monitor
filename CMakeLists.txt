@@ -50,9 +50,13 @@ set_property(TARGET ncurses PROPERTY
   ########################################################################
   find_package(libzmq REQUIRED)
   IF (LIBZMQ_FOUND)
-      include_directories(${LIBZMQ_INCLUDE_DIRS})
-      list(APPEND MORE_LIBRARIES ${LIBZMQ_LIBRARIES})
-      set(pkg_config_libs_private "${pkg_config_libs_private} -lzmq")
+      add_library(libzmq INTERFACE IMPORTED)
+      # include_directories(${LIBZMQ_INCLUDE_DIRS})
+      # list(APPEND MORE_LIBRARIES ${LIBZMQ_LIBRARIES})
+      set_property(TARGET libzmq PROPERTY
+      INTERFACE_INCLUDE_DIRECTORIES ${LIBZMQ_INCLUDE_DIRS})
+      set_property(TARGET libzmq PROPERTY
+        INTERFACE_LINK_LIBRARIES ${CURSES_LIBRARIES})
   ELSE (LIBZMQ_FOUND)
       message( FATAL_ERROR "libzmq not found." )
   ENDIF (LIBZMQ_FOUND)
@@ -64,7 +68,6 @@ set_property(TARGET ncurses PROPERTY
   IF (CZMQ_FOUND)
       include_directories(${CZMQ_INCLUDE_DIRS})
       list(APPEND MORE_LIBRARIES ${CZMQ_LIBRARIES})
-      set(pkg_config_libs_private "${pkg_config_libs_private} -lczmq")
   ELSE (CZMQ_FOUND)
       message( FATAL_ERROR "czmq not found." )
   ENDIF (CZMQ_FOUND)
