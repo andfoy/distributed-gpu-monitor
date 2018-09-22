@@ -28,6 +28,7 @@
 #include <string.h>
 
 #include <locale.h>
+#include <czmq.h>
 
 #include "nvtop/interface.h"
 #include "nvtop/version.h"
@@ -102,10 +103,16 @@ static const struct option long_opts[] = {
     .flag = NULL,
     .val = 'i'
   },
+  {
+    .name = "remote-server",
+    .has_arg = required_argument,
+    .flag = NULL,
+    .val = 'r'
+  },
   {0,0,0,0},
 };
 
-static const char opts[] = "hvd:s:i:C";
+static const char opts[] = "hvd:r:s:i:C";
 
 static size_t update_mask_value(const char *str, size_t entry_mask, bool addTo) {
   char *saveptr;
@@ -143,6 +150,7 @@ int main (int argc, char **argv) {
   char *selectedGPU = NULL;
   char *ignoredGPU = NULL;
   bool use_color_if_available = true;
+  char *server_hostname = "localhost";
   while (true) {
     char optchar = getopt_long(argc, argv, opts, long_opts, NULL);
     if (optchar == -1)
@@ -162,6 +170,10 @@ int main (int argc, char **argv) {
           }
           refresh_interval = (int) delay_val * 100u;
         }
+        break;
+      case 'r':
+        server_hostname = optarg;
+        printf("%s\n", server_hostname);
         break;
       case 's':
         selectedGPU = optarg;
@@ -192,6 +204,13 @@ int main (int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
   }
+
+  char server_endpoint[40];
+  sprintf(server_endpoint, "tcp://%s:6587", server_hostname);
+  zsock_t *push_sock = zsock_new_push(server_endpoint);
+
+  char hostname[1024];
+  gethostname(hostname, 1024);
 
   setenv("ESCDELAY", "10", 1);
 
@@ -252,6 +271,7 @@ int main (int argc, char **argv) {
       update_window_size_to_terminal_size(interface);
       signal_bits &= ~RESIZE_SIGNAL;
     }
+    zstr_send (push_sock, hostname);
     draw_gpu_info_ncurses(dev_infos, interface);
 
     int input_char = getch();
@@ -298,6 +318,7 @@ int main (int argc, char **argv) {
   clean_ncurses(interface);
   clean_device_info(num_devices, dev_infos);
   shutdown_gpu_info_extraction();
+  zsock_destroy (&push_sock);
 
   return EXIT_SUCCESS;
 }
