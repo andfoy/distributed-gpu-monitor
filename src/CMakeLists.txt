@@ -16,7 +16,7 @@ target_include_directories(nvtop PRIVATE
 set_property(TARGET nvtop PROPERTY C_STANDARD 11)
 
 target_link_libraries(nvtop
-PRIVATE nvml ncurses czmq m)
+PRIVATE nvml ncurses czmq msgpack m)
 
 install (TARGETS nvtop
   RUNTIME DESTINATION bin)
