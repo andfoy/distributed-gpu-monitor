@@ -209,6 +209,9 @@ int main (int argc, char **argv) {
   sprintf(server_endpoint, "tcp://%s:6587", server_hostname);
   zsock_t *push_sock = zsock_new_push(server_endpoint);
 
+  char hostname[1024];
+  gethostname(hostname, 1024);
+
   setenv("ESCDELAY", "10", 1);
 
   struct sigaction siga;
@@ -268,7 +271,7 @@ int main (int argc, char **argv) {
       update_window_size_to_terminal_size(interface);
       signal_bits &= ~RESIZE_SIGNAL;
     }
-    zstr_send (push_sock, "GPU Info!");
+    zstr_send (push_sock, hostname);
     draw_gpu_info_ncurses(dev_infos, interface);
 
     int input_char = getch();
