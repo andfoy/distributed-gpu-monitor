@@ -48,26 +48,25 @@ set_property(TARGET ncurses PROPERTY
 ########################################################################
 # LIBZMQ dependency
 ########################################################################
-find_package ( ZMQ REQUIRED )
-include_directories ( ${ZMQ_INCLUDE_DIR} )
-add_library(zmq INTERFACE IMPORTED)
-set_property(TARGET zmq PROPERTY
-  INTERFACE_INCLUDE_DIRECTORIES ${ZMQ_INCLUDE_DIR})
-set_property(TARGET zmq PROPERTY
-  INTERFACE_LINK_LIBRARIES ${ZMQ_LIBRARY})
-
+find_package(libzmq REQUIRED)
+IF (LIBZMQ_FOUND)
+    include_directories(${LIBZMQ_INCLUDE_DIRS})
+    list(APPEND MORE_LIBRARIES ${LIBZMQ_LIBRARIES})
+ELSE (LIBZMQ_FOUND)
+    message( FATAL_ERROR "libzmq not found." )
+ENDIF (LIBZMQ_FOUND)
 
 ########################################################################
 # CZMQ dependency
 ########################################################################
+find_package(czmq REQUIRED)
+IF (CZMQ_FOUND)
+    include_directories(${CZMQ_INCLUDE_DIRS})
+    list(APPEND MORE_LIBRARIES ${CZMQ_LIBRARIES})
+ELSE (CZMQ_FOUND)
+    message( FATAL_ERROR "czmq not found." )
+ENDIF (CZMQ_FOUND)
 
-find_package ( CZMQ REQUIRED )
-include_directories ( ${CZMQ_INCLUDE_DIR} )
-add_library(czmq INTERFACE IMPORTED)
-set_property(TARGET czmq PROPERTY
-  INTERFACE_INCLUDE_DIRECTORIES ${CZMQ_INCLUDE_DIR})
-set_property(TARGET czmq PROPERTY
-  INTERFACE_LINK_LIBRARIES ${CZMQ_LIBRARY})
 
 
 #///////////////////////////////////////////////////////////////////#
