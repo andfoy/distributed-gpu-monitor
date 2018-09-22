@@ -80,7 +80,7 @@ set_property(TARGET ncurses PROPERTY
 ########################################################################
 # Msgpack dependency
 ########################################################################
-find_package(msgpackc REQUIRED)
+# find_package(msgpackc REQUIRED)
 # IF (CZMQ_FOUND)
 #     add_library(czmq INTERFACE IMPORTED)
 #     set_property(TARGET czmq PROPERTY
