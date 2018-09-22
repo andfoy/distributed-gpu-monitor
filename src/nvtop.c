@@ -274,12 +274,17 @@ int main (int argc, char **argv) {
     }
     zmsg_t *msg = zmsg_new();
     char* device_num;
+    char* free_memory_str;
     // zframe_t *frame = zframe_new ("Hello", 5);
     zmsg_pushstr(msg, hostname);
     for(int dev = 0; dev < num_devices; dev++) {
       // zmsg_addmem(msg, dev);
+      zmsg_t *submsg = zmsg_new();
       asprintf (&device_num, "%d", dev);
-      zmsg_addstr(msg, device_num);
+      zmsg_addstr(submsg, device_num);
+      asprintf (&free_memory_str, "%llu", dev_infos[dev] -> free_memory);
+      zmsg_addstr(submsg, free_memory_str);
+      zmsg_addmsg (msg, &submsg);
       // zmsg_addstr(msg, "END");
       // zstr_send (push_sock, hostname);
     }
