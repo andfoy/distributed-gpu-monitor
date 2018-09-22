@@ -205,6 +205,10 @@ int main (int argc, char **argv) {
     }
   }
 
+  char server_endpoint[40];
+  sprintf(server_endpoint, "tcp://%s:6587", server_hostname);
+  zsock_t *push_sock = zsock_new_push(server_endpoint);
+
   setenv("ESCDELAY", "10", 1);
 
   struct sigaction siga;
@@ -258,16 +262,13 @@ int main (int argc, char **argv) {
     initialize_curses(num_devices, biggest_name, use_color_if_available);
   timeout(refresh_interval);
 
-  char server_endpoint[40];
-  sprintf(server_endpoint, "tcp://%s:6587", server_hostname);
-  zsock_t *req_sock = zsock_new_req(server_endpoint);
   while (!(signal_bits & STOP_SIGNAL)) {
     update_device_infos(num_devices, dev_infos);
     if (signal_bits & RESIZE_SIGNAL) {
       update_window_size_to_terminal_size(interface);
       signal_bits &= ~RESIZE_SIGNAL;
     }
-    zstr_send (req_sock, "GPU Info!");
+    zstr_send (push_sock, "GPU Info!");
     draw_gpu_info_ncurses(dev_infos, interface);
 
     int input_char = getch();
@@ -314,7 +315,7 @@ int main (int argc, char **argv) {
   clean_ncurses(interface);
   clean_device_info(num_devices, dev_infos);
   shutdown_gpu_info_extraction();
-  zsock_destroy (&req_sock);
+  zsock_destroy (&push_sock);
 
   return EXIT_SUCCESS;
 }
