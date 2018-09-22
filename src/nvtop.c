@@ -275,8 +275,8 @@ int main (int argc, char **argv) {
     zmsg_t *msg = zmsg_new ();
     zmsg_pushstr(msg, hostname);
     for(int dev = 0; dev < 0; dev++) {
-      zmsg_addmem(msg, dev)
-      zmsg_addstr(msg, "END")
+      zmsg_addmem(msg, dev);
+      zmsg_addstr(msg, "END");
       // zstr_send (push_sock, hostname);
     }
     draw_gpu_info_ncurses(dev_infos, interface);
