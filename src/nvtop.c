@@ -320,7 +320,7 @@ int main (int argc, char **argv) {
       zmsg_t *procs_msg = zmsg_new();
       char* pid_str;
       char* used_memory_str;
-      for(int proc = 0; proc < dev_infos[dev].gpu_util_rate) {
+      for(int proc = 0; proc < dev_infos[dev].gpu_util_rate; proc++) {
         zmsg_t *proc_msg = zmsg_new();
         asprintf (&pid_str, "%d", dev_infos[dev].graphic_procs[proc].pid);
         zmsg_addstr(proc_msg, pid_str);
