@@ -316,6 +316,21 @@ int main (int argc, char **argv) {
       zmsg_addstr(msg, gpu_util_rate_str);
       zmsg_addmsg (msg, &mem_msg);
       zmsg_addmsg (msg, &temp_msg);
+
+      zmsg_t *procs_msg = zmsg_new();
+      char* pid_str;
+      char* used_memory_str;
+      for(int proc = 0; proc < dev_infos[dev].gpu_util_rate) {
+        zmsg_t *proc_msg = zmsg_new();
+        asprintf (&pid_str, "%d", dev_infos[dev].graphic_procs[proc].pid);
+        zmsg_addstr(proc_msg, pid_str);
+        zmsg_addstr(proc_msg, dev_infos[dev].graphic_procs[proc].process_name);
+        zmsg_addstr(proc_msg, dev_infos[dev].graphic_procs[proc].user_name);
+        asprintf (&used_memory_str, "%llu", dev_infos[dev].graphic_procs[proc].used_memory);
+        zmsg_addstr(proc_msg, pid_str);
+        zmsg_addmsg (procs_msg, &proc_msg);
+      }
+      zmsg_addmsg (msg, &procs_msg);
       // zmsg_addstr(msg, "END");
       // zstr_send (push_sock, hostname);
     }
