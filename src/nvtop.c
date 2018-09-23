@@ -26,6 +26,7 @@
 #include <ncurses.h>
 #include <getopt.h>
 #include <string.h>
+// #include <msgpack.h>
 
 #include <locale.h>
 #include <czmq.h>
@@ -271,7 +272,69 @@ int main (int argc, char **argv) {
       update_window_size_to_terminal_size(interface);
       signal_bits &= ~RESIZE_SIGNAL;
     }
-    zstr_send (push_sock, hostname);
+    zmsg_t *msg = zmsg_new();
+    char* device_num;
+    char* free_memory_str;
+    char* used_memory_str;
+    char* total_memory_str;
+    char* gpu_temp_str;
+    char* gpu_temp_slowdown_str;
+    char* gpu_temp_shutdown_str;
+    char* fan_speed_str;
+    char* gpu_util_rate_str;
+    // zframe_t *frame = zframe_new ("Hello", 5);
+    zmsg_pushstr(msg, hostname);
+    for(int dev = 0; dev < num_devices; dev++) {
+      // zmsg_addmem(msg, dev);
+      zmsg_t *mem_msg = zmsg_new();
+      zmsg_t *gpu_msg = zmsg_new();
+      zmsg_t *temp_msg = zmsg_new();
+      // GPU information
+      asprintf(&device_num, "%d", dev);
+      zmsg_addstr(gpu_msg, device_num);
+      zmsg_addstr(gpu_msg,  dev_infos[dev].device_name);
+      // Memory information
+      asprintf (&used_memory_str, "%llu", dev_infos[dev].used_memory);
+      zmsg_addstr(mem_msg, used_memory_str);
+      asprintf (&free_memory_str, "%llu", dev_infos[dev].free_memory);
+      zmsg_addstr(mem_msg, free_memory_str);
+      asprintf (&total_memory_str, "%llu", dev_infos[dev].total_memory);
+      zmsg_addstr(mem_msg, total_memory_str);
+      // Temperature/Fan information
+      asprintf (&gpu_temp_str, "%d", dev_infos[dev].gpu_temp);
+      zmsg_addstr(temp_msg, gpu_temp_str);
+      asprintf (&gpu_temp_slowdown_str, "%d", dev_infos[dev].gpu_temp_slowdown);
+      zmsg_addstr(temp_msg, gpu_temp_slowdown_str);
+      asprintf (&gpu_temp_shutdown_str, "%d", dev_infos[dev].gpu_temp_shutdown);
+      zmsg_addstr(temp_msg, gpu_temp_shutdown_str);
+      asprintf (&fan_speed_str, "%d", dev_infos[dev].fan_speed);
+      zmsg_addstr(temp_msg, fan_speed_str);
+      // Pack all messages
+      zmsg_addmsg (msg, &gpu_msg);
+      // GPU usage
+      asprintf (&gpu_util_rate_str, "%d", dev_infos[dev].gpu_util_rate);
+      zmsg_addstr(msg, gpu_util_rate_str);
+      zmsg_addmsg (msg, &mem_msg);
+      zmsg_addmsg (msg, &temp_msg);
+
+      zmsg_t *procs_msg = zmsg_new();
+      char* pid_str;
+      char* used_memory_str;
+      for(int proc = 0; proc < dev_infos[dev].num_compute_procs; proc++) {
+        zmsg_t *proc_msg = zmsg_new();
+        asprintf (&pid_str, "%d", dev_infos[dev].compute_procs[proc].pid);
+        zmsg_addstr(proc_msg, pid_str);
+        zmsg_addstr(proc_msg, dev_infos[dev].compute_procs[proc].process_name);
+        zmsg_addstr(proc_msg, dev_infos[dev].compute_procs[proc].user_name);
+        asprintf (&used_memory_str, "%llu", dev_infos[dev].compute_procs[proc].used_memory);
+        zmsg_addstr(proc_msg, pid_str);
+        zmsg_addmsg (procs_msg, &proc_msg);
+      }
+      zmsg_addmsg (msg, &procs_msg);
+      // zmsg_addstr(msg, "END");
+      // zstr_send (push_sock, hostname);
+    }
+    zmsg_send (&msg, push_sock);
     draw_gpu_info_ncurses(dev_infos, interface);
 
     int input_char = getch();
