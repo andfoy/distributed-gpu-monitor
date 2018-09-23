@@ -281,6 +281,7 @@ int main (int argc, char **argv) {
     char* gpu_temp_slowdown_str;
     char* gpu_temp_shutdown_str;
     char* fan_speed_str;
+    char* gpu_util_rate_str;
     // zframe_t *frame = zframe_new ("Hello", 5);
     zmsg_pushstr(msg, hostname);
     for(int dev = 0; dev < num_devices; dev++) {
@@ -308,6 +309,9 @@ int main (int argc, char **argv) {
       zmsg_addstr(temp_msg, gpu_temp_shutdown_str);
       asprintf (&fan_speed_str, "%d", dev_infos[dev].fan_speed);
       zmsg_addstr(temp_msg, fan_speed_str);
+      // GPU usage
+      asprintf (&gpu_util_rate_str, "%d", dev_infos[dev].gpu_util_rate);
+      zmsg_addstr(msg, gpu_util_rate_str);
       // Pack all messages
       zmsg_addmsg (msg, &gpu_msg);
       zmsg_addmsg (msg, &mem_msg);
