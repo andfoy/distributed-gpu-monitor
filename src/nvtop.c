@@ -283,7 +283,7 @@ int main (int argc, char **argv) {
       // zmsg_addmem(msg, dev);
       zmsg_t *submsg = zmsg_new();
       asprintf (&device_num, "%d", dev);
-      zmsg_addstr(submsg, device_num);
+      zmsg_addstr(msg, device_num);
       asprintf (&free_memory_str, "%llu", dev_infos[dev].free_memory);
       zmsg_addstr(submsg, free_memory_str);
       asprintf (&used_memory_str, "%llu", dev_infos[dev].used_memory);
