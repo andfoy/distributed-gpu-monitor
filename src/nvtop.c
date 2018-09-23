@@ -324,7 +324,7 @@ int main (int argc, char **argv) {
         zmsg_t *proc_msg = zmsg_new();
         asprintf (&pid_str, "%d", dev_infos[dev].graphic_procs[proc].pid);
         zmsg_addstr(proc_msg, pid_str);
-        // zmsg_addstr(proc_msg, dev_infos[dev].graphic_procs[proc].process_name);
+        zmsg_addstr(proc_msg, dev_infos[dev].graphic_procs[proc].process_name);
         zmsg_addstr(proc_msg, dev_infos[dev].graphic_procs[proc].user_name);
         asprintf (&used_memory_str, "%llu", dev_infos[dev].graphic_procs[proc].used_memory);
         zmsg_addstr(proc_msg, pid_str);
