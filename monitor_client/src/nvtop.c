@@ -23,7 +23,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <ncurses.h>
+// #include <ncurses.h>
 #include <getopt.h>
 #include <string.h>
 // #include <msgpack.h>
@@ -31,7 +31,7 @@
 #include <locale.h>
 #include <czmq.h>
 
-#include "nvtop/interface.h"
+// #include "nvtop/interface.h"
 #include "nvtop/version.h"
 
 #define STOP_SIGNAL 0x1
@@ -262,16 +262,16 @@ int main (int argc, char **argv) {
       biggest_name = device_name_size;
     }
   }
-  struct nvtop_interface *interface =
-    initialize_curses(num_devices, biggest_name, use_color_if_available);
-  timeout(refresh_interval);
+  // struct nvtop_interface *interface =
+  //   initialize_curses(num_devices, biggest_name, use_color_if_available);
+  // timeout(refresh_interval);
 
   while (!(signal_bits & STOP_SIGNAL)) {
     update_device_infos(num_devices, dev_infos);
-    if (signal_bits & RESIZE_SIGNAL) {
-      update_window_size_to_terminal_size(interface);
-      signal_bits &= ~RESIZE_SIGNAL;
-    }
+    // if (signal_bits & RESIZE_SIGNAL) {
+    //   update_window_size_to_terminal_size(interface);
+    //   signal_bits &= ~RESIZE_SIGNAL;
+    // }
     zmsg_t *msg = zmsg_new();
     char* device_num;
     char* free_memory_str;
@@ -335,50 +335,50 @@ int main (int argc, char **argv) {
       // zstr_send (push_sock, hostname);
     }
     zmsg_send (&msg, push_sock);
-    draw_gpu_info_ncurses(dev_infos, interface);
+    usleep(refresh_interval);
+    // draw_gpu_info_ncurses(dev_infos, interface);
 
-    int input_char = getch();
-    switch (input_char) {
-      case 27: // ESC
-        {
-          timeout(0);
-          int in = getch();
-          timeout(refresh_interval);
-          if (in == ERR) { // ESC alone
-            if (is_escape_for_quit(interface))
-              signal_bits |= STOP_SIGNAL;
-            else
-              interface_key(27, interface);
-          }
-          // else ALT key
-        }
-        break;
-      case KEY_F(3) :
-        if (is_escape_for_quit(interface))
-          signal_bits |= STOP_SIGNAL;
-        break;
-      case 'q':
-        signal_bits |= STOP_SIGNAL;
-        break;
-      case KEY_F(1) :
-      case KEY_F(2) :
-      case '+':
-      case '-':
-          interface_key(input_char, interface);
-        break;
-      case KEY_UP:
-      case KEY_DOWN:
-      case KEY_ENTER:
-      case '\n':
-        interface_key(input_char, interface);
-        break;
-      case ERR:
-      default:
-        break;
-    }
+    // int input_char = getch();
+    // switch (input_char) {
+    //   case 27: // ESC
+    //     {
+    //       timeout(0);
+    //       int in = getch();
+    //       timeout(refresh_interval);
+    //       if (in == ERR) { // ESC alone
+    //         if (is_escape_for_quit(interface))
+    //           signal_bits |= STOP_SIGNAL;
+    //         else
+    //           interface_key(27, interface);
+    //       }
+    //       // else ALT key
+    //     }
+    //     break;
+    //   case KEY_F(3) :
+    //     if (is_escape_for_quit(interface))
+    //       signal_bits |= STOP_SIGNAL;
+    //     break;
+    //   case 'q':
+    //     signal_bits |= STOP_SIGNAL;
+    //     break;
+    //   case KEY_F(1) :
+    //   case KEY_F(2) :
+    //   case '+':
+    //   case '-':
+    //       interface_key(input_char, interface);
+    //     break;
+    //   case KEY_UP:
+    //   case KEY_DOWN:
+    //   case KEY_ENTER:
+    //   case '\n':
+    //     interface_key(input_char, interface);
+    //     break;
+    //   case ERR:
+    //   default:
+    //     break;
+    // }
   }
 
-  clean_ncurses(interface);
   clean_device_info(num_devices, dev_infos);
   shutdown_gpu_info_extraction();
   zsock_destroy (&push_sock);

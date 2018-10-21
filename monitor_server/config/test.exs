@@ -8,12 +8,3 @@ config :monitor_server, MonitorServerWeb.Endpoint,
 
 # Print only warnings and errors during test
 config :logger, level: :warn
-
-# Configure your database
-config :monitor_server, MonitorServer.Repo,
-  adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
-  database: "monitor_server_test",
-  hostname: "localhost",
-  pool: Ecto.Adapters.SQL.Sandbox
