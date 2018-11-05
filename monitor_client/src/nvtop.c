@@ -32,6 +32,7 @@
 #include <czmq.h>
 
 // #include "nvtop/interface.h"
+#include "nvtop/extract_gpuinfo.h"
 #include "nvtop/version.h"
 
 #define STOP_SIGNAL 0x1
