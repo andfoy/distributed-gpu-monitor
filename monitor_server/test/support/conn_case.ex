@@ -27,11 +27,7 @@ defmodule MonitorServerWeb.ConnCase do
   end
 
 
-  setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(MonitorServer.Repo)
-    unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(MonitorServer.Repo, {:shared, self()})
-    end
+  setup _tags do
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
 

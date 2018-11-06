@@ -35,7 +35,7 @@ defmodule MonitorServerWeb.Endpoint do
   plug Plug.Session,
     store: :cookie,
     key: "_monitor_server_key",
-    signing_salt: "gjrdLB2w"
+    signing_salt: "DvLlKSKb"
 
   plug MonitorServerWeb.Router
 

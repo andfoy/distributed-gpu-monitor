@@ -5,14 +5,10 @@
 # is restricted to this project.
 use Mix.Config
 
-# General application configuration
-config :monitor_server,
-  ecto_repos: [MonitorServer.Repo]
-
 # Configures the endpoint
 config :monitor_server, MonitorServerWeb.Endpoint,
   url: [host: "localhost"],
-  secret_key_base: "9P5nB3kL1FQ9voMtfdk0y13vZPTWJAIsIR5ivrIYHRB3JORLqE6NYI67waqQNRVg",
+  secret_key_base: "bw2bp3dU5vOZCceFk2imPVdntOKJtydeuJVxQUUtw1W8gEQX9h9usIxFYGxh965V",
   render_errors: [view: MonitorServerWeb.ErrorView, accepts: ~w(html json)],
   pubsub: [name: MonitorServer.PubSub,
            adapter: Phoenix.PubSub.PG2]
