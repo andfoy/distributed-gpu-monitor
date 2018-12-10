@@ -23,5 +23,6 @@ class GPUInfoWS(tornado.websocket.WebSocketHandler):
         self.application.zmq_poller.deregister_listener(self.uuid)
 
     def notify(self, info):
-        info = json.dump(info)
-        self.write(info)
+        # LOGGER.info(info)
+        info = json.dumps(info)
+        self.write_message(info)

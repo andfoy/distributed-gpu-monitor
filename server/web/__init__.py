@@ -21,6 +21,7 @@ import sys
 #New submodules defined inside this module must be imported here
 from . import main_handler
 from . import new_handler
+from . import gpu_ws_handler
 # users_handler
 
 __version__ = '1.0.0'

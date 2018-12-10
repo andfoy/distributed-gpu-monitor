@@ -31,4 +31,8 @@ WEB = [
     (r'/', web.main_handler.MainHandler)
 ]
 
-ROUTES = REST + WEB
+WS = [
+    (r'/gpu/', web.gpu_ws_handler.GPUInfoWS)
+]
+
+ROUTES = REST + WEB + WS
