@@ -11,7 +11,12 @@ ctx = zmq.asyncio.Context.instance()
 
 
 class ZMQPoller:
-    INFO_PARTS = ['gpu', 'load', 'mem', 'temp']
+    INFO_PARTS = {
+        'gpu': ['id', 'model'],
+        'load': [],
+        'mem': ['used', 'free', 'total'],
+        'temp': ['temp', 'slow_temp', 'shut_temp', 'fan']
+    }
 
     def __init__(self):
         self.listeners = {}
@@ -26,8 +31,13 @@ class ZMQPoller:
         machine_info = []
         hostname = info[0]
         info = info[1:]
-        for i, part in enumerate(self.INFO_PARTS):
-            info_part = info[i]
+        pos = 0
+        while pos < len(info):
+            gpu_info = {}
+            for i, part in enumerate(self.INFO_PARTS):
+                info_part = info[i + pos]
+
+
 
     async def pulling(self):
         LOGGER.info('Starting ZMQ PULL socket at: 0.0.0.0:6587')
