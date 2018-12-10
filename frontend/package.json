@@ -5,7 +5,10 @@
   "dependencies": {
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
-    "react-scripts": "2.1.1"
+    "react-scripts": "2.1.1",
+    "reactstrap": "^6.5.0",
+    "sockette": "^2.0.3",
+    "victory": "^31.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -16,6 +19,7 @@
   "eslintConfig": {
     "extends": "react-app"
   },
+  "proxy": "http://127.0.0.1:8001",
   "browserslist": [
     ">0.2%",
     "not dead",

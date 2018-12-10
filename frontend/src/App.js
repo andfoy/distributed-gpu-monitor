@@ -1,25 +1,30 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { Row } from 'reactstrap';
+import NavBar from './components/NavBar';
+import GPUAccordion from './components/GPUAccordion';
 
 class App extends Component {
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+        <NavBar/>
+        {/* <Container> */}
+        <div className="app-content">
+          <Row>
+          <GPUAccordion/>
+            {/* <Col xs="6">
+              <ImageCard image={this.state.image} imgWidth={this.state.width}
+                        imgHeight={this.state.height} title="Title"
+                        resizeCount={this.state.resizeCount} />
+            </Col>
+            <Col xs="6">
+              <MyJumbotron updateText={this.update.bind(this)}/>
+            </Col> */}
+          </Row>
+        </div>
+        {/* </Container> */}
       </div>
     );
   }

@@ -11,6 +11,9 @@ LOGGER = logging.getLogger(__name__)
 
 
 class GPUInfoWS(tornado.websocket.WebSocketHandler):
+    def check_origin(self, origin):
+        return True
+
     def open(self):
         self.uuid = uuid.uuid4()
         self.application.zmq_poller.register_listener(self.uuid, self)
