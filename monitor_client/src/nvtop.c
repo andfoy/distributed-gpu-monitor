@@ -328,11 +328,11 @@ int main (int argc, char **argv) {
         zmsg_addstr(proc_msg, dev_infos[dev].compute_procs[proc].process_name);
         zmsg_addstr(proc_msg, dev_infos[dev].compute_procs[proc].user_name);
         asprintf (&used_memory_str, "%llu", dev_infos[dev].compute_procs[proc].used_memory);
-        zmsg_addstr(proc_msg, pid_str);
+        zmsg_addstr(proc_msg, used_memory_str);
         zmsg_addmsg (procs_msg, &proc_msg);
       }
       zmsg_addmsg (msg, &procs_msg);
-      // zmsg_addstr(msg, "END");
+      zmsg_addstr(msg, "END");
       // zstr_send (push_sock, hostname);
     }
     zmsg_send (&msg, push_sock);

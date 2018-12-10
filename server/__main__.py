@@ -14,10 +14,12 @@ import os.path as osp
 import tornado.web
 import tornado.ioloop
 import tornado.autoreload
+from tornado.platform.asyncio import AsyncIOMainLoop
 
 # Local imports
 # from server.db import RiakDB
 from server.routes import ROUTES
+from server.zmq_poller import ZMQPoller
 
 # Other library imports
 import coloredlogs
@@ -54,28 +56,20 @@ def main():
     logging.basicConfig(level=logging.DEBUG, format=LOG_FORMAT)
     settings = {"static_path": os.path.join(
         os.path.dirname(__file__), "static", "static")}
-    routes = ROUTES # + [(r".*",
-    #                   tornado.web.StaticFileHandler,
-    #                   dict(path=settings['static_path']))]
+    # routes = ROUTES
     application = tornado.web.Application(
-        routes, debug=True, serve_traceback=True, autoreload=True,
+        ROUTES, debug=True, serve_traceback=True, autoreload=True,
         **settings)
     print("Server is now at: 127.0.0.1:8000")
+
+    application.zmq_poller = ZMQPoller()
     ioloop = tornado.ioloop.IOLoop.instance()
+    ioloop.spawn_callback(application.zmq_poller.pulling)
 
     # application.db = RiakDB(args.riak_url)
-    LOGGER.info('Riak connected')
-
-
-    # tornado.autoreload.add_reload_hook(recompile_react)
+    # LOGGER.info('Riak connected')
     application.listen(args.port)
 
-    # for dir, _, files in os.walk('src'):
-    #     for f in files:
-    #         f = osp.join(dir, f)
-    #         print(f)
-
-    #         tornado.autoreload.watch(f)
     try:
         ioloop.start()
     except KeyboardInterrupt:
