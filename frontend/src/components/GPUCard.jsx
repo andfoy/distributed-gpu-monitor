@@ -8,23 +8,29 @@ export default class GPUCard extends React.Component {
         return procs.length === 0 ? "success" : "danger";
     }
 
+    clickBtn(machine, gpu) {
+        this.props.updateDisplay(machine, gpu)();
+    }
+
     render() {
         let gpus_info = this.props.gpus;
         let machine = this.props.hostname;
         let buttons = gpus_info.map(
-            g => <ButtonGroup>
+            g =>
             <Button key={`${machine}_${g.gpu.id}_btn`}
                     color={this.colorSelector(g.procs)}
-                    id={`${machine}_${g.gpu.id}`}>
+                    id={`${machine}_${g.gpu.id}`}
+                    onClick={this.clickBtn.bind(this, machine, g)}>
                     GPU {g.gpu.id} <Badge color="secondary">{g.procs.length}</Badge>
-            </Button>
             <UncontrolledTooltip placement="top" target={`${machine}_${g.gpu.id}`}>
                 {g.gpu.model}
             </UncontrolledTooltip>
-            </ButtonGroup>)
+            </Button>)
         return (
             <CardBody>
+            <ButtonGroup>
                 {buttons}
+            </ButtonGroup>
             </CardBody>
         );
     }
