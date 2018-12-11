@@ -4,7 +4,7 @@ import Gauge from 'react-svg-gauge';
 import './styles/TemperatureCard.css';
 
 
-export default class TemperatureCard extends React.Component {
+export default class LoadCard extends React.Component {
     mapColor() {
         if (this.props.info.temp < this.props.info.slow_temp) {
             return "#009F6B"

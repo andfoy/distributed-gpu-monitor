@@ -1,6 +1,7 @@
 import React from 'react';
 import {Card, Col, CardDeck, CardHeader, CardBody} from 'reactstrap';
 import TemperatureCard from './cards/TemperatureCard';
+import MemoryCard from './cards/MemoryCard';
 
 
 export default class GPUPanel extends React.Component {
@@ -15,17 +16,20 @@ export default class GPUPanel extends React.Component {
                     {this.props.gpu !== null ? (<Col xs={12}>
                         <CardDeck>
                             <TemperatureCard info={this.props.gpu.temp}/>
+                            <MemoryCard info={this.props.gpu.mem}/>
                             <Card>
                                 <CardHeader>
-                                    Memory
-                                        </CardHeader>
+                                    Load (%)
+                                </CardHeader>
                             </Card>
+                        </CardDeck>
+                        <div className="graph-container">
                             <Card>
                                 <CardHeader>
                                     Processes
-                                        </CardHeader>
+                                </CardHeader>
                             </Card>
-                        </CardDeck>
+                        </div>
                         <div className="graph-container">
                             <Card>
                                 <CardHeader>

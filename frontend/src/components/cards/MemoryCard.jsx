@@ -4,12 +4,25 @@ import Gauge from 'react-svg-gauge';
 import './styles/TemperatureCard.css';
 
 
-export default class TemperatureCard extends React.Component {
+export default class MemoryCard extends React.Component {
+
+    bytesToSize(bytes) {
+        var sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+        if (bytes === 0) return '0 B';
+        var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+        return Math.round(bytes / Math.pow(1024, i), 2) + '' + sizes[i];
+     }
+
     mapColor() {
-        if (this.props.info.temp < this.props.info.slow_temp) {
+        let usage = this.props.info.used / this.props.info.total;
+        if(usage < 0.2) {
             return "#009F6B"
-        } else if (this.props.info.temp >= this.props.info.slow_temp && this.props.info.temp < this.props.info.shut_temp) {
+        } else if (usage >= 0.2 && usage < 0.4) {
+            return "#969f00"
+        } else if (usage >= 0.4 && usage < 0.6) {
             return "#FFD300"
+        } else if (usage >= 0.6 && usage < 0.8) {
+            return "#ffa400"
         } else {
             return "#C40233"
         }
@@ -28,22 +41,25 @@ export default class TemperatureCard extends React.Component {
             "fillOpacity": "1",
             "fontSize": "30px"
         }
+
+        let value = Math.round(this.props.info.used / Math.pow(1024, 3));
+        let maxValue = Math.round(this.props.info.total / Math.pow(1024, 3));
         return (
             <Card>
                 <CardHeader>
-                    Temperature (°C)
+                    Memory (Bytes)
                 </CardHeader>
                 <CardBody>
-                    <Gauge className="gauge" value={this.props.info.temp}
+                    <Gauge className="gauge" value={value}
                         color={this.mapColor()}
                         width={227} height={125} label=""
-                        max={this.props.info.shut_temp}
-                        valueFormatter={value => `${value}°C`}
+                        max={maxValue}
+                        valueFormatter={value => `${this.bytesToSize(this.props.info.used)}`}
                         valueLabelStyle={valueStyle}
                     />
                 </CardBody>
                 <CardFooter>
-                    Fan Speed: <b>{this.props.info.fan}%</b>
+                    Memory Usage: <b>{Math.round(100 * this.props.info.used / this.props.info.total, 2)}%</b>
                 </CardFooter>
             </Card>
         );
