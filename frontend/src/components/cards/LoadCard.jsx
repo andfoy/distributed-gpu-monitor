@@ -36,7 +36,7 @@ export default class LoadCard extends React.Component {
         return (
             <Card>
                 <CardHeader>
-                    Load (%)
+                    Fan (%)
                 </CardHeader>
                 <CardBody>
                     <Gauge className="gauge" value={this.props.info}
@@ -47,9 +47,9 @@ export default class LoadCard extends React.Component {
                         valueLabelStyle={valueStyle}
                     />
                 </CardBody>
-                {/* <CardFooter>
-                    Fan Speed: <b>{this.props.info.fan}%</b>
-                </CardFooter> */}
+                <CardFooter>
+                    Load: <b>{this.props.load}%</b>
+                </CardFooter>
             </Card>
         );
     }
