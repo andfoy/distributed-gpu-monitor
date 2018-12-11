@@ -13,14 +13,16 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && rm -rf ../server/static && cp -r build ../server/static",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "yarn build && cd .. && python -m server --port 8001"
   },
   "eslintConfig": {
     "extends": "react-app"
   },
   "proxy": "http://127.0.0.1:8001",
+  "homepage": "http://marr.uniandes.edu.co/gpu",
   "browserslist": [
     ">0.2%",
     "not dead",

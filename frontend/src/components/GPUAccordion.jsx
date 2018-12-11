@@ -15,9 +15,11 @@ export default class GPUAccordion extends React.Component {
             currentMachine: null,
             tempSeries: []
         }
-        this.socket = new Sockette('ws://127.0.0.1:8001/gpu/', {
+        let url = process.env.NODE_ENV !== 'production' ? "ws://127.0.0.1:8001/gpu/" : "ws://marr.uniandes.edu.co/gpu/gpu/"
+        this.socket = new Sockette(url, {
             onmessage: this.updateInfo.bind(this),
-            onerror: (evt) => { console.log(evt) }
+            onerror: (evt) => { console.log(evt) },
+            onclose: () => {console.log("Socket closed")}
         });
     }
 
