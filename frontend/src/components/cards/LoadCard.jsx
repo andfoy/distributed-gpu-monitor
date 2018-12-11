@@ -6,10 +6,15 @@ import './styles/TemperatureCard.css';
 
 export default class LoadCard extends React.Component {
     mapColor() {
-        if (this.props.info.temp < this.props.info.slow_temp) {
+        let usage = this.props.info / 100.0
+        if(usage < 0.2) {
             return "#009F6B"
-        } else if (this.props.info.temp >= this.props.info.slow_temp && this.props.info.temp < this.props.info.shut_temp) {
+        } else if (usage >= 0.2 && usage < 0.4) {
+            return "#969f00"
+        } else if (usage >= 0.4 && usage < 0.6) {
             return "#FFD300"
+        } else if (usage >= 0.6 && usage < 0.8) {
+            return "#ffa400"
         } else {
             return "#C40233"
         }
@@ -31,20 +36,20 @@ export default class LoadCard extends React.Component {
         return (
             <Card>
                 <CardHeader>
-                    Temperature (°C)
+                    Load (%)
                 </CardHeader>
                 <CardBody>
-                    <Gauge className="gauge" value={this.props.info.temp}
+                    <Gauge className="gauge" value={this.props.info}
                         color={this.mapColor()}
                         width={227} height={125} label=""
-                        max={this.props.info.shut_temp}
-                        valueFormatter={value => `${value}°C`}
+                        max={100}
+                        valueFormatter={value => `${value}%`}
                         valueLabelStyle={valueStyle}
                     />
                 </CardBody>
-                <CardFooter>
+                {/* <CardFooter>
                     Fan Speed: <b>{this.props.info.fan}%</b>
-                </CardFooter>
+                </CardFooter> */}
             </Card>
         );
     }
