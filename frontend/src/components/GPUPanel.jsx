@@ -3,10 +3,11 @@ import {Card, Col, CardDeck, CardHeader, CardBody} from 'reactstrap';
 import TemperatureCard from './cards/TemperatureCard';
 import MemoryCard from './cards/MemoryCard';
 import LoadCard from './cards/LoadCard';
+import ProcessCard from './cards/ProcessCard';
+import TempGraph from './graphs/TempGraph';
 
 
 export default class GPUPanel extends React.Component {
-
     render() {
         return (
             <Card>
@@ -21,17 +22,16 @@ export default class GPUPanel extends React.Component {
                             <LoadCard info={this.props.gpu.load}/>
                         </CardDeck>
                         <div className="graph-container">
-                            <Card>
-                                <CardHeader>
-                                    Processes
-                                </CardHeader>
-                            </Card>
+                            <ProcessCard processes={this.props.gpu.procs}/>
                         </div>
                         <div className="graph-container">
                             <Card>
                                 <CardHeader>
-                                    Graphs
+                                    Temperature Graph
                                 </CardHeader>
+                                <CardBody>
+                                    <TempGraph series={this.props.tempSeries}/>
+                                </CardBody>
                             </Card>
                         </div>
                     </Col>) : ""}

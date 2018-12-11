@@ -1,10 +1,9 @@
 
 import React from 'react';
 import Sockette from 'sockette';
-import { Card, CardHeader, Alert, Row, Col, CardDeck, CardBody } from 'reactstrap';
+import { Card, CardHeader, Alert, Row, Col } from 'reactstrap';
 import GPUCard from './GPUCard';
 import './styles/GPUAccordion.css';
-import Gauge from 'react-svg-gauge';
 import GPUPanel from './GPUPanel';
 
 export default class GPUAccordion extends React.Component {
@@ -13,7 +12,8 @@ export default class GPUAccordion extends React.Component {
         this.state = {
             gpus: {},
             selectedGPU: null,
-            currentMachine: null
+            currentMachine: null,
+            tempSeries: []
         }
         this.socket = new Sockette('ws://127.0.0.1:8001/gpu/', {
             onmessage: this.updateInfo.bind(this),
@@ -28,18 +28,35 @@ export default class GPUAccordion extends React.Component {
         update[key] = msg;
         var currentMachine = this.state.currentMachine;
         var selectedGPU = this.state.selectedGPU;
+        var tempSeries = this.state.tempSeries;
         if(key === this.state.currentMachine) {
             // console.log(msg.gpus);
             // console.log(selectedGPU);
             selectedGPU = msg.gpus[selectedGPU.gpu.id];
+            let temp = selectedGPU.temp;
+            tempSeries.push({
+                time: Date.now(),
+                temp: temp.temp,
+                shutTemp: temp.shut_temp,
+                slowTemp: temp.slow_temp});
         }
-        this.setState({gpus: update, currentMachine: currentMachine, selectedGPU: selectedGPU});
+        this.setState({gpus: update, currentMachine: currentMachine,
+                       selectedGPU: selectedGPU, tempSeries: tempSeries});
     }
 
     updateSelected(machine, gpu) {
         console.log(machine);
         console.log(gpu);
-        this.setState({currentMachine: machine, selectedGPU: gpu});
+        let temp = gpu.temp;
+        let tempSeries = [
+            {
+                time: Date.now(),
+                temp: temp.temp,
+                shutTemp: temp.shut_temp,
+                slowTemp: temp.slow_temp
+            }
+        ]
+        this.setState({currentMachine: machine, selectedGPU: gpu, tempSeries: tempSeries});
     }
 
     render() {
@@ -70,7 +87,9 @@ export default class GPUAccordion extends React.Component {
                     </Col>
                     <Col md={8}>
                         <GPUPanel machine={this.state.currentMachine}
-                                  gpu={this.state.selectedGPU}/>
+                                  gpu={this.state.selectedGPU}
+                                  tempSeries={this.state.tempSeries}
+                                  />
                     </Col>
                 </Row>
             </Col>
