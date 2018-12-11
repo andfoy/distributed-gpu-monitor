@@ -43,7 +43,7 @@ export default class TemperatureCard extends React.Component {
                     />
                 </CardBody>
                 <CardFooter>
-                    Fan Speed: <b>{this.props.info.fan}%</b>
+                    Slowdown Temp: <b>{this.props.info.slow_temp}°C</b> Shutdown Temp: <b>{this.props.info.shut_temp}°C</b>
                 </CardFooter>
             </Card>
         );

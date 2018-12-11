@@ -19,7 +19,9 @@ export default class GPUPanel extends React.Component {
                         <CardDeck>
                             <TemperatureCard info={this.props.gpu.temp}/>
                             <MemoryCard info={this.props.gpu.mem}/>
-                            <LoadCard info={this.props.gpu.load}/>
+                            <LoadCard load={this.props.gpu.load}
+                                      info={this.props.gpu.temp.fan}
+                            />
                         </CardDeck>
                         <div className="graph-container">
                             <ProcessCard processes={this.props.gpu.procs}/>
