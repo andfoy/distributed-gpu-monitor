@@ -33,13 +33,32 @@ export default class GPUAccordion extends React.Component {
 
     checkLastContact() {
         var machines = Object.keys(this.state.lastContact);
+        var gpuUpdate = {...this.state.gpus};
+        var selectedGPU = this.state.selectedGPU;
+        var currentMachine = this.state.currentMachine;
+        var tempSeries = this.state.tempSeries;
         let downMachines = machines.reduce((acc, val) => {
             if(this.state.lastContact[val] === null || Date.now() - this.state.lastContact[val] > 1500) {
                 acc[val] = val;
             }
             return acc;
         }, {});
-        this.setState({downMachines: downMachines});
+
+        gpuUpdate = Object.keys(downMachines).reduce((acc, val) => {
+            // ({val, ...acc} = acc);
+            delete acc[val];
+            console.log(acc);
+            return acc
+        }, gpuUpdate);
+
+        if(downMachines[currentMachine] !== undefined) {
+            currentMachine = null;
+            selectedGPU = null;
+            tempSeries = [];
+        }
+        this.setState({gpus: gpuUpdate, downMachines: downMachines,
+                       selectedGPU: selectedGPU, tempSeries: tempSeries,
+                       currentMachine: currentMachine});
     }
 
     updateInfo(evt) {
