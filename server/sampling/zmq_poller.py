@@ -1,8 +1,7 @@
+
 import asyncio
 import logging
 import zmq.asyncio
-from tornado.platform.asyncio import AsyncIOMainLoop
-
 
 LOGGER = logging.getLogger(__name__)
 
@@ -25,8 +24,9 @@ class ZMQPoller:
         'mem': int
     }
 
-    def __init__(self):
+    def __init__(self, sampler_queue):
         self.listeners = {}
+        self.sampler_queue = sampler_queue
 
     def register_listener(self, _id, listener):
         self.listeners[_id] = listener
@@ -88,3 +88,4 @@ class ZMQPoller:
             LOGGER.debug(info)
             for listener_id in self.listeners:
                 self.listeners[listener_id].notify(info)
+            await self.sampler_queue.put(info)

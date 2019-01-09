@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 # !/usr/bin/env python
 
-"""keypoint-annotator backend Python server."""
+"""Distributed GPU Monitor Python backend server."""
 
 # Standard lib imports
 import os
-import sys
 import logging
 import argparse
 import os.path as osp
@@ -14,23 +13,28 @@ import os.path as osp
 import tornado.web
 import tornado.ioloop
 import tornado.autoreload
-from tornado.platform.asyncio import AsyncIOMainLoop
 
 # Local imports
 # from server.db import RiakDB
 from server.routes import ROUTES
-from server.zmq_poller import ZMQPoller
+from server.sampling.zmq_poller import ZMQPoller
 
 # Other library imports
+import yaml
 import coloredlogs
+import motor.motor_tornado
 
-riak_url = os.environ.get('RIAK_URL', 'pbc://localhost:8087')
+
+LOCATION = osp.realpath(osp.join(os.getcwd(), osp.dirname(__file__)))
+CONFIG_PATH = osp.join(LOCATION, 'config')
+mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+
 
 parser = argparse.ArgumentParser(
     description='keypoint-annotator backend server')
 
-parser.add_argument('--riak-url', type=str, default=riak_url,
-                    help='Riak url endpoint used to locate DB')
+parser.add_argument('--mongo-url', type=str, default=mongo_url,
+                    help='MongoDB url endpoint used to locate DB')
 parser.add_argument('--port', type=int, default=8000,
                     help='TCP port used to deploy the server')
 
@@ -52,14 +56,24 @@ if os.name == 'nt':
 def recompile_react():
     os.system('yarn build')
 
+
+def load_config_file():
+    servers = {}
+    with open(osp.join(CONFIG_PATH, 'servers.yaml')) as f:
+        servers = yaml.load(f)
+    return servers
+
+
 def main():
     logging.basicConfig(level=logging.DEBUG, format=LOG_FORMAT)
     settings = {"static_path": os.path.join(
         os.path.dirname(__file__), "static", "static")}
     # routes = ROUTES
+    client = motor.motor_tornado.MotorClient(args.mongo_url)
     application = tornado.web.Application(
         ROUTES, debug=True, serve_traceback=True, autoreload=True,
         **settings)
+    application.mongo = client
     print("Server is now at: 127.0.0.1:8000")
 
     application.zmq_poller = ZMQPoller()
