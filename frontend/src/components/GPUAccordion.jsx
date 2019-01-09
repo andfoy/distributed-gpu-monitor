@@ -22,19 +22,19 @@ export default class GPUAccordion extends React.Component {
             }, {})
         }
         this.checkLastContact = this.checkLastContact.bind(this);
+        setInterval(this.checkLastContact, 200);
         let url = process.env.NODE_ENV !== 'production' ? "ws://127.0.0.1:8001/gpu/" : "ws://marr.uniandes.edu.co/gpu/gpu/"
         this.socket = new Sockette(url, {
             onmessage: this.updateInfo.bind(this),
             onerror: (evt) => { console.log(evt) },
             onclose: () => {console.log("Socket closed")}
         });
-        setInterval(this.checkLastContact, 200);
     }
 
     checkLastContact() {
         var machines = Object.keys(this.state.lastContact);
         let downMachines = machines.reduce((acc, val) => {
-            if(Date.now() - this.state.lastContact[val] <= 500) {
+            if(this.state.lastContact[val] === null || Date.now() - this.state.lastContact[val] > 1500) {
                 acc[val] = val;
             }
             return acc;
@@ -107,7 +107,7 @@ export default class GPUAccordion extends React.Component {
         }
         return (
             <Col md={12}>
-                <Alert color={"success" ? areDownMachines : "warning"}>
+                <Alert color={!areDownMachines ? "success" : "warning"}>
                     {statusMsg}
                 </Alert>
                 <Row>
