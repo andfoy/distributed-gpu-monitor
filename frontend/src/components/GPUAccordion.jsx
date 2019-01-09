@@ -95,7 +95,7 @@ export default class GPUAccordion extends React.Component {
         var clickFunc = (machine, gpu) => this.updateSelected.bind(this, machine, gpu);
         var downMachines = Object.keys(this.state.downMachines);
         var areDownMachines = downMachines.length > 0;
-        var statusMsg = "";
+        var statusMsg = "All systems online!";
         if(areDownMachines) {
             let [first, ...rest] = downMachines;
             statusMsg = `${first} is down!`;
