@@ -9,18 +9,56 @@ import GPUPanel from './GPUPanel';
 export default class GPUAccordion extends React.Component {
     constructor(props) {
         super(props);
+        let machines = process.env.REACT_APP_MACHINES.split(",")
         this.state = {
             gpus: {},
             selectedGPU: null,
             currentMachine: null,
-            tempSeries: []
+            tempSeries: [],
+            downMachines: {},
+            lastContact: machines.reduce((acc, val) => {
+                acc[val] = null;
+                return acc;
+            }, {})
         }
+        this.checkLastContact = this.checkLastContact.bind(this);
+        setInterval(this.checkLastContact, 200);
         let url = process.env.NODE_ENV !== 'production' ? "ws://127.0.0.1:8001/gpu/" : "ws://marr.uniandes.edu.co/gpu/gpu/"
         this.socket = new Sockette(url, {
             onmessage: this.updateInfo.bind(this),
             onerror: (evt) => { console.log(evt) },
             onclose: () => {console.log("Socket closed")}
         });
+    }
+
+    checkLastContact() {
+        var machines = Object.keys(this.state.lastContact);
+        var gpuUpdate = {...this.state.gpus};
+        var selectedGPU = this.state.selectedGPU;
+        var currentMachine = this.state.currentMachine;
+        var tempSeries = this.state.tempSeries;
+        let downMachines = machines.reduce((acc, val) => {
+            if(this.state.lastContact[val] === null || Date.now() - this.state.lastContact[val] > 1500) {
+                acc[val] = val;
+            }
+            return acc;
+        }, {});
+
+        gpuUpdate = Object.keys(downMachines).reduce((acc, val) => {
+            // ({val, ...acc} = acc);
+            delete acc[val];
+            console.log(acc);
+            return acc
+        }, gpuUpdate);
+
+        if(downMachines[currentMachine] !== undefined) {
+            currentMachine = null;
+            selectedGPU = null;
+            tempSeries = [];
+        }
+        this.setState({gpus: gpuUpdate, downMachines: downMachines,
+                       selectedGPU: selectedGPU, tempSeries: tempSeries,
+                       currentMachine: currentMachine});
     }
 
     updateInfo(evt) {
@@ -31,6 +69,14 @@ export default class GPUAccordion extends React.Component {
         var currentMachine = this.state.currentMachine;
         var selectedGPU = this.state.selectedGPU;
         var tempSeries = this.state.tempSeries;
+        var lastContact = {...this.state.lastContact};
+        let downMachines = {...this.state.downMachines};
+        lastContact[key] = Date.now();
+
+        if(downMachines[key] !== undefined) {
+            ({key, ...downMachines} = downMachines);
+        }
+
         if(key === this.state.currentMachine) {
             // console.log(msg.gpus);
             // console.log(selectedGPU);
@@ -43,7 +89,8 @@ export default class GPUAccordion extends React.Component {
                 slowTemp: temp.slow_temp});
         }
         this.setState({gpus: update, currentMachine: currentMachine,
-                       selectedGPU: selectedGPU, tempSeries: tempSeries});
+                       selectedGPU: selectedGPU, tempSeries: tempSeries,
+                       lastContact: lastContact, downMachines: downMachines});
     }
 
     updateSelected(machine, gpu) {
@@ -65,11 +112,23 @@ export default class GPUAccordion extends React.Component {
         var available_gpus = Object.keys(this.state.gpus);
         available_gpus = available_gpus.sort();
         var clickFunc = (machine, gpu) => this.updateSelected.bind(this, machine, gpu);
+        var downMachines = Object.keys(this.state.downMachines);
+        var areDownMachines = downMachines.length > 0;
+        var statusMsg = "All systems online!";
+        if(areDownMachines) {
+            let [first, ...rest] = downMachines;
+            statusMsg = `${first} is down!`;
+            if(rest.length > 0) {
+                let head = downMachines.slice(0, -1);
+                let last = downMachines[downMachines.length - 1];
+                statusMsg = `${head.join(", ")} and ${last} are down!`;
+            }
+        }
         return (
             <Col md={12}>
-                <Alert color="success">
-                    All systems online!
-                    </Alert>
+                <Alert color={!areDownMachines ? "success" : "warning"}>
+                    {statusMsg}
+                </Alert>
                 <Row>
                     <Col md={4}>
                         <div>

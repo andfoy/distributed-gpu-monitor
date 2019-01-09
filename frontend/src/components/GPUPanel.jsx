@@ -26,7 +26,7 @@ export default class GPUPanel extends React.Component {
                         <div className="graph-container">
                             <ProcessCard processes={this.props.gpu.procs}/>
                         </div>
-                        <div className="graph-container">
+                        {/* <div className="graph-container">
                             <Card>
                                 <CardHeader>
                                     Temperature Graph
@@ -35,7 +35,7 @@ export default class GPUPanel extends React.Component {
                                     <TempGraph series={this.props.tempSeries}/>
                                 </CardBody>
                             </Card>
-                        </div>
+                        </div> */}
                     </Col>) : ""}
                 </CardBody>
             </Card>
