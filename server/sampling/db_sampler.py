@@ -12,7 +12,8 @@ class MongoDBSampler:
             'shutdown': 100
         },
         'fan': 0,
-        'load': 0
+        'load': 0,
+        'timestamp': pendulum.now()
     }
 
     def __init__(self, servers, mongo_client, queue):
@@ -74,7 +75,25 @@ class MongoDBSampler:
                 await self.create_document(collection, collection_info)
 
     async def update_collection(self, collection, machine_acc):
+        def floor_to_multiple(num, divisor):
+            return num - (num % divisor)
+
         collection_info = COLLECTIONS[collection]
+        timestamp = machine_acc['last_sample'].start_of(
+            collection_info['reference'])
+        outer_most, inner_most = [
+            getattr(timestamp, t) for t in collection_info['sample_periods']]
+        inner_most = floor_to_multiple(
+            inner_most, collection_info['inner_range'][1])
+        count = machine_acc['count']
+        for gpuid in range(0, 4):
+            gpu_sample = machine_acc[gpuid]
+            gpu_sample['temp']['value'] /= count
+            gpu_sample['fan'] /= count
+            gpu_sample['load'] /= count
+            await self.db[collection].update_one(
+                {collection_info['key']: timestamp},
+                {"$set": {f"values.{outer_most}.{inner_most}": gpu_sample}})
 
     async def update_collections(self, info):
         machine = info['hostname']
@@ -101,6 +120,7 @@ class MongoDBSampler:
                 gpu_acc['temp']['shutdown'] = gpu['temp']['shut_temp']
                 gpu_acc['fan'] += gpu['temp']['fan']
                 gpu_acc['load'] += gpu['load']
+                gpu_acc['timestamp'] = current_time
                 machine_acc_sample[gpuid] = gpu_acc
             collection_acc_samples[machine] = machine_acc_sample
             self.acc_samples[collection] = collection_acc_samples
