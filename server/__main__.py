@@ -72,6 +72,7 @@ def main():
         os.path.dirname(__file__), "static", "static")}
     # routes = ROUTES
     client = motor.motor_tornado.MotorClient(args.mongo_url)
+    LOGGER.info(f"Connected to MongoDB on {args.mongo_url}")
     application = tornado.web.Application(
         ROUTES, debug=True, serve_traceback=True, autoreload=True,
         **settings)

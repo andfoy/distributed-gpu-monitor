@@ -1,6 +1,10 @@
 
+import logging
 import pendulum
+from copy import deepcopy
 from server.sampling import COLLECTIONS
+
+LOGGER = logging.getLogger(__name__)
 
 
 class MongoDBSampler:
@@ -22,27 +26,29 @@ class MongoDBSampler:
         self.servers = servers
 
         server_template = {s: self.gpu_template for s in servers}
-        self.acc_samples = {c: server_template for c in COLLECTIONS}
+        self.acc_samples = {c: deepcopy(server_template) for c in COLLECTIONS}
         self.current_time = pendulum.now()
 
     @property
     def reading_template(self):
-        return self.READING_SAMPLE
+        return deepcopy(self.READING_SAMPLE)
 
     @property
     def gpu_template(self):
         gpu_template = {i: self.reading_template for i in range(4)}
         gpu_template['count'] = 0
         gpu_template['last_sample'] = None
-        return gpu_template
+        gpu_template['current_sample'] = None
+        return deepcopy(gpu_template)
 
     async def create_document(self, collection, collection_info):
+        LOGGER.info(f"Creating template documents for collection {collection}")
         inner_template = {
-            x: self.reading_template
+            str(x): self.reading_template
             for x in range(0, *collection_info['inner_range'])
         }
         outer_template = {
-            x: inner_template
+            str(x): inner_template
             for x in range(0, collection_info['max_value'])
         }
         outer_template['avg'] = self.reading_template
@@ -74,13 +80,12 @@ class MongoDBSampler:
             if diff_value() >= collection_info['diff']:
                 await self.create_document(collection, collection_info)
 
-    async def update_collection(self, collection, machine_acc):
+    async def update_collection(self, collection, machine, machine_acc):
         def floor_to_multiple(num, divisor):
             return num - (num % divisor)
 
         collection_info = COLLECTIONS[collection]
-        timestamp = machine_acc['last_sample'].start_of(
-            collection_info['reference'])
+        timestamp = machine_acc['current_sample']
         outer_most, inner_most = [
             getattr(timestamp, t) for t in collection_info['sample_periods']]
         inner_most = floor_to_multiple(
@@ -91,9 +96,30 @@ class MongoDBSampler:
             gpu_sample['temp']['value'] /= count
             gpu_sample['fan'] /= count
             gpu_sample['load'] /= count
-            await self.db[collection].update_one(
-                {collection_info['key']: timestamp},
-                {"$set": {f"values.{outer_most}.{inner_most}": gpu_sample}})
+            temp = gpu_sample['temp']
+            fan = gpu_sample['fan']
+            load = gpu_sample['load']
+            common_prefix = f"values.{outer_most}.{inner_most}"
+            LOGGER.info(common_prefix)
+            LOGGER.info(gpu_sample)
+            result = await self.db[collection].update_one(
+                {
+                    collection_info['key']: timestamp.start_of(
+                        collection_info['reference']),
+                    "machine": machine,
+                    "gpuid": gpuid
+                },
+                {
+                    "$set": {
+                        f"{common_prefix}.temp.value": temp['value'],
+                        f"{common_prefix}.temp.slowdown": temp['slowdown'],
+                        f"{common_prefix}.temp.shutdown": temp['shutdown'],
+                        f"{common_prefix}.fan": fan,
+                        f"{common_prefix}.load": load,
+                        f"{common_prefix}.timestamp": timestamp
+                    }
+                })
+            LOGGER.info(result.modified_count)
 
     async def update_collections(self, info):
         machine = info['hostname']
@@ -106,14 +132,18 @@ class MongoDBSampler:
             if machine_acc_sample['last_sample'] is None:
                 machine_acc_sample['last_sample'] = current_time
             diff = current_time - machine_acc_sample['last_sample']
+            LOGGER.info(f"diff/expected: {diff.in_seconds()}/{collection_info['sample_period']}")
             if diff.in_seconds() >= collection_info['sample_period']:
+                LOGGER.info(f"Updating collection {collection}")
                 await self.update_collection(
-                    collection, machine_acc_sample)
+                    collection, machine, machine_acc_sample)
                 machine_acc_sample = self.gpu_template
+                machine_acc_sample['last_sample'] = current_time
             machine_acc_sample['count'] += 1
-            machine_acc_sample['last_sample'] = current_time
+            machine_acc_sample['current_sample'] = current_time
             for gpu in gpus:
-                gpuid = gpu['id']
+                LOGGER.debug(gpu)
+                gpuid = gpu['gpu']['id']
                 gpu_acc = machine_acc_sample[gpuid]
                 gpu_acc['temp']['value'] += gpu['temp']['temp']
                 gpu_acc['temp']['slowdown'] = gpu['temp']['slow_temp']
@@ -122,6 +152,7 @@ class MongoDBSampler:
                 gpu_acc['load'] += gpu['load']
                 gpu_acc['timestamp'] = current_time
                 machine_acc_sample[gpuid] = gpu_acc
+            LOGGER.debug(machine_acc_sample)
             collection_acc_samples[machine] = machine_acc_sample
             self.acc_samples[collection] = collection_acc_samples
 
