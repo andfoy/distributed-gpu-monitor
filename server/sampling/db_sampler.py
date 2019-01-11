@@ -1,50 +1,112 @@
 
 import pendulum
-
-SAMPLE_TEMPLATE = {
-    'temp': 0,
-    'fan': 0,
-    'usage': 0
-}
+from server.sampling import COLLECTIONS
 
 
 class MongoDBSampler:
     DB = 'gpu'
-    COLLECTION = 'samples'
+    READING_SAMPLE = {
+        'temp': {
+            'value': 0,
+            'slowdown': 90,
+            'shutdown': 100
+        },
+        'fan': 0,
+        'load': 0
+    }
 
     def __init__(self, servers, mongo_client, queue):
-        self.db = mongo_client.gpu
+        self.db = mongo_client[self.DB]
         self.queue = queue
         self.servers = servers
-        gpu_template = {i: SAMPLE_TEMPLATE for i in range(4)}
+
+        server_template = {s: self.gpu_template for s in servers}
+        self.acc_samples = {c: server_template for c in COLLECTIONS}
+        self.current_time = pendulum.now()
+
+    @property
+    def reading_template(self):
+        return self.READING_SAMPLE
+
+    @property
+    def gpu_template(self):
+        gpu_template = {i: self.reading_template for i in range(4)}
         gpu_template['count'] = 0
-        self.last_sample = {s: gpu_template for s in servers}
-        self.current_day = pendulum.today()
+        gpu_template['last_sample'] = None
+        return gpu_template
 
-    async def create_documents(self):
-        minutes_template = {
-            m: SAMPLE_TEMPLATE for m in range(0, 60, 2)
+    async def create_document(self, collection, collection_info):
+        inner_template = {
+            x: self.reading_template
+            for x in range(0, *collection_info['inner_range'])
         }
-        hour_template = {h: minutes_template for h in range(0, 24)}
-        hour_template['avg'] = SAMPLE_TEMPLATE
-        hour_template['count'] = 0
+        outer_template = {
+            x: inner_template
+            for x in range(0, collection_info['max_value'])
+        }
+        outer_template['avg'] = self.reading_template
+        outer_template['count'] = 0
 
+        time = self.current_time.start_of(collection_info['reference'])
         for server in self.servers:
             entries = [{
-                'timestamp_day': self.current_day,
+                collection_info['key']: time,
                 'machine': server,
                 'gpuid': gpu,
-                'values': hour_template
+                'values': outer_template
             } for gpu in range(0, 4)]
-            await self.db.samples.insert_many(entries)
+            await self.db[collection].insert_many(entries)
+
+    async def create_documents(self):
+        for collection in COLLECTIONS:
+            collection_info = COLLECTIONS[collection]
+            await self.create_document(collection, collection_info)
+
+    async def period_renewal(self):
+        for collection in COLLECTIONS:
+            current_time = pendulum.now()
+            collection_info = COLLECTIONS[collection]
+            reference_time = self.current_time.start_of(
+                collection_info['reference'])
+            diff = current_time - reference_time
+            diff_value = getattr(diff, collection_info['periodicity'])
+            if diff_value() >= collection_info['diff']:
+                await self.create_document(collection, collection_info)
+
+    async def update_collection(self, collection, machine_acc):
+        collection_info = COLLECTIONS[collection]
+
+    async def update_collections(self, info):
+        machine = info['hostname']
+        gpus = info['gpus']
+        for collection in COLLECTIONS:
+            current_time = pendulum.now()
+            collection_info = COLLECTIONS[collection]
+            collection_acc_samples = self.acc_samples[collection]
+            machine_acc_sample = collection_acc_samples[machine]
+            if machine_acc_sample['last_sample'] is None:
+                machine_acc_sample['last_sample'] = current_time
+            diff = current_time - machine_acc_sample['last_sample']
+            if diff.in_seconds() >= collection_info['sample_period']:
+                await self.update_collection(
+                    collection, machine_acc_sample)
+                machine_acc_sample = self.gpu_template
+            machine_acc_sample['count'] += 1
+            machine_acc_sample['last_sample'] = current_time
+            for gpu in gpus:
+                gpuid = gpu['id']
+                gpu_acc = machine_acc_sample[gpuid]
+                gpu_acc['temp']['value'] += gpu['temp']['temp']
+                gpu_acc['temp']['slowdown'] = gpu['temp']['slow_temp']
+                gpu_acc['temp']['shutdown'] = gpu['temp']['shut_temp']
+                gpu_acc['fan'] += gpu['temp']['fan']
+                gpu_acc['load'] += gpu['load']
+                machine_acc_sample[gpuid] = gpu_acc
+            collection_acc_samples[machine] = machine_acc_sample
+            self.acc_samples[collection] = collection_acc_samples
 
     async def sample(self):
         await self.create_documents()
         async for info in self.queue:
-            current_time = pendulum.now()
-            time_diff = current_time - self.current_day
-            if time_diff.in_days() >= 1:
-                self.current_day = pendulum.today()
-                await self.create_documents()
-            machine = info['hostname']
-            gpus = info['gpus']
+            await self.period_renewal()
+            await self.update_collections(info)
