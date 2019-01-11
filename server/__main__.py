@@ -13,11 +13,13 @@ import os.path as osp
 import tornado.web
 import tornado.ioloop
 import tornado.autoreload
+from tornado.queues import Queue
 
 # Local imports
 # from server.db import RiakDB
 from server.routes import ROUTES
 from server.sampling.zmq_poller import ZMQPoller
+from server.sampling.db_sampler import MongoDBSampler
 
 # Other library imports
 import yaml
@@ -74,15 +76,21 @@ def main():
         ROUTES, debug=True, serve_traceback=True, autoreload=True,
         **settings)
     application.mongo = client
-    print("Server is now at: 127.0.0.1:8000")
 
-    application.zmq_poller = ZMQPoller()
+    config = load_config_file()
+
+    queue = Queue(maxsize=10)
+    application.zmq_poller = ZMQPoller(queue)
+    sampler = MongoDBSampler(config['servers'], client, queue)
+
     ioloop = tornado.ioloop.IOLoop.instance()
     ioloop.spawn_callback(application.zmq_poller.pulling)
+    ioloop.spawn_callback(sampler.sample)
 
     # application.db = RiakDB(args.riak_url)
     # LOGGER.info('Riak connected')
     application.listen(args.port)
+    LOGGER.info(f"Server is now at: 127.0.0.1:{args.port}")
 
     try:
         ioloop.start()
