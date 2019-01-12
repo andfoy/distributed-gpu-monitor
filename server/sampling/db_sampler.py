@@ -79,6 +79,7 @@ class MongoDBSampler:
             diff_value = getattr(diff, collection_info['periodicity'])
             if diff_value() >= collection_info['diff']:
                 await self.create_document(collection, collection_info)
+                self.current_time = current_time
 
     async def update_collection(self, collection, machine, machine_acc):
         def floor_to_multiple(num, divisor):
@@ -132,7 +133,8 @@ class MongoDBSampler:
             if machine_acc_sample['last_sample'] is None:
                 machine_acc_sample['last_sample'] = current_time
             diff = current_time - machine_acc_sample['last_sample']
-            LOGGER.info(f"diff/expected: {diff.in_seconds()}/{collection_info['sample_period']}")
+            LOGGER.info(f"diff/expected: {diff.in_seconds()}/"
+                        f"{collection_info['sample_period']}")
             if diff.in_seconds() >= collection_info['sample_period']:
                 LOGGER.info(f"Updating collection {collection}")
                 await self.update_collection(
