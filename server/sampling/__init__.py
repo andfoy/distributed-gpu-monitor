@@ -25,7 +25,7 @@ COLLECTIONS = {
         'key': 'timestamp_week',
         'periodicity': 'in_days',
         'diff': 1,
-        'inner_range': (60, 2),
+        'inner_range': (60, 14),
         'max_value': 24,
         'reference': 'day',
         'sample_periods': ['hour', 'minute']

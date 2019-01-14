@@ -17,7 +17,8 @@ class MongoDBSampler:
         },
         'fan': 0,
         'load': 0,
-        'timestamp': pendulum.now()
+        'timestamp': pendulum.now(),
+        'modified': False
     }
 
     def __init__(self, servers, mongo_client, queue):
@@ -51,8 +52,8 @@ class MongoDBSampler:
             str(x): inner_template
             for x in range(0, collection_info['max_value'])
         }
-        outer_template['avg'] = self.reading_template
-        outer_template['count'] = 0
+        # outer_template['avg'] = self.reading_template
+        # outer_template['count'] = 0
 
         time = self.current_time.start_of(collection_info['reference'])
         for server in self.servers:
@@ -78,8 +79,8 @@ class MongoDBSampler:
             diff = current_time - reference_time
             diff_value = getattr(diff, collection_info['periodicity'])
             if diff_value() >= collection_info['diff']:
-                await self.create_document(collection, collection_info)
                 self.current_time = current_time
+                await self.create_document(collection, collection_info)
 
     async def update_collection(self, collection, machine, machine_acc):
         def floor_to_multiple(num, divisor):
@@ -117,7 +118,8 @@ class MongoDBSampler:
                         f"{common_prefix}.temp.shutdown": temp['shutdown'],
                         f"{common_prefix}.fan": fan,
                         f"{common_prefix}.load": load,
-                        f"{common_prefix}.timestamp": timestamp
+                        f"{common_prefix}.timestamp": timestamp,
+                        f"{common_prefix}.modified": True
                     }
                 })
             LOGGER.info(result.modified_count)
@@ -159,7 +161,7 @@ class MongoDBSampler:
             self.acc_samples[collection] = collection_acc_samples
 
     async def sample(self):
-        await self.create_documents()
+        # await self.create_documents()
         async for info in self.queue:
             await self.period_renewal()
             await self.update_collections(info)
