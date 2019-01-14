@@ -14,9 +14,6 @@ For more information regarding routing URL and valid regular expressions
 visit: http://www.tornadoweb.org/en/stable/guide/structure.html
 """
 
-import os
-import sys
-import tornado.web
 import server.web as web
 
 # Define new rest associations
@@ -27,8 +24,8 @@ WEB = [
     # (r'/user', web.users_handler.MainHandler),
     # (r'/anns/.*', web.ann_handler.MainHandler),
     # (r'/images/', web.image_handler.MainHandler),
-    (r'/cart/(.*)', web.new_handler.MainHandler),
-    (r'/', web.main_handler.MainHandler)
+    (r'/', web.main_handler.MainHandler),
+    (r'/graphs', web.graphs_handler.GraphsHandler)
 ]
 
 WS = [

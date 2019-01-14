@@ -22,7 +22,7 @@ COLLECTIONS = {
     },
     'week_samples': {
         'sample_period': 7 * 120,  # s
-        'key': 'timestamp_day_week',
+        'key': 'timestamp_week',
         'periodicity': 'in_days',
         'diff': 1,
         'inner_range': (60, 2),
