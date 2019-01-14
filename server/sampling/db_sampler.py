@@ -64,11 +64,33 @@ class MongoDBSampler:
                 'values': outer_template
             } for gpu in range(0, 4)]
             await self.db[collection].insert_many(entries)
+        await self.db.last_renewal.update_one(
+            {'collection': collection}, {'$set': {'timestamp': time}})
+
+    async def check_document(self, collection, collection_info):
+        last_timestamp = await self.db.last_renewal.find_one(
+            {'collection': collection})
+        generate = True
+        time = self.current_time.start_of(collection_info['reference'])
+        if last_timestamp is not None:
+            last_timestamp = pendulum.instance(last_timestamp['timestamp'])
+            last_timestamp = last_timestamp.in_tz(time.timezone_name)
+            last_timestamp = last_timestamp.start_of(
+                collection_info['reference'])
+            LOGGER.info(f"Server timestamp: {last_timestamp}")
+            LOGGER.info(f"Local timestamp: {time}")
+            generate = last_timestamp != time
+        else:
+            await self.db.last_renewal.insert_one({
+                'collection': collection, 'timestamp': time})
+        return generate
 
     async def create_documents(self):
         for collection in COLLECTIONS:
             collection_info = COLLECTIONS[collection]
-            await self.create_document(collection, collection_info)
+            pending = await self.check_document(collection, collection_info)
+            if pending:
+                await self.create_document(collection, collection_info)
 
     async def period_renewal(self):
         for collection in COLLECTIONS:
@@ -161,7 +183,7 @@ class MongoDBSampler:
             self.acc_samples[collection] = collection_acc_samples
 
     async def sample(self):
-        # await self.create_documents()
+        await self.create_documents()
         async for info in self.queue:
             await self.period_renewal()
             await self.update_collections(info)

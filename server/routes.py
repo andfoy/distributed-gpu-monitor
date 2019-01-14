@@ -21,9 +21,6 @@ REST = []
 
 # Define new web rendering route associations
 WEB = [
-    # (r'/user', web.users_handler.MainHandler),
-    # (r'/anns/.*', web.ann_handler.MainHandler),
-    # (r'/images/', web.image_handler.MainHandler),
     (r'/', web.main_handler.MainHandler),
     (r'/graphs', web.graphs_handler.GraphsHandler)
 ]
