@@ -2,9 +2,10 @@
 import React from 'react';
 import Sockette from 'sockette';
 import { Card, CardHeader, Alert, Row, Col } from 'reactstrap';
+import Moment from 'moment-timezone';
 import GPUCard from './GPUCard';
-import './styles/GPUAccordion.css';
 import GPUPanel from './GPUPanel';
+import './styles/GPUAccordion.css';
 
 export default class GPUAccordion extends React.Component {
     constructor(props) {
@@ -14,7 +15,11 @@ export default class GPUAccordion extends React.Component {
             gpus: {},
             selectedGPU: null,
             currentMachine: null,
-            tempSeries: [],
+            tempSeries: {
+                temp: [],
+                fan: []
+            },
+            lastSelection: null,
             downMachines: {},
             lastContact: machines.reduce((acc, val) => {
                 acc[val] = null;
@@ -37,6 +42,8 @@ export default class GPUAccordion extends React.Component {
         var selectedGPU = this.state.selectedGPU;
         var currentMachine = this.state.currentMachine;
         var tempSeries = this.state.tempSeries;
+        var lastSelection = this.state.lastSelection;
+        var lastContact = this.state.lastContact;
         let downMachines = machines.reduce((acc, val) => {
             if(this.state.lastContact[val] === null || Date.now() - this.state.lastContact[val] > 1500) {
                 acc[val] = val;
@@ -52,13 +59,19 @@ export default class GPUAccordion extends React.Component {
         }, gpuUpdate);
 
         if(downMachines[currentMachine] !== undefined) {
+            lastContact[currentMachine] = null;
             currentMachine = null;
             selectedGPU = null;
-            tempSeries = [];
+            tempSeries = {
+                temp: [],
+                fan: []
+            };
+            lastSelection = null;
         }
         this.setState({gpus: gpuUpdate, downMachines: downMachines,
                        selectedGPU: selectedGPU, tempSeries: tempSeries,
-                       currentMachine: currentMachine});
+                       currentMachine: currentMachine, lastSelection: lastSelection,
+                       lastContact: lastContact});
     }
 
     updateInfo(evt) {
@@ -82,6 +95,43 @@ export default class GPUAccordion extends React.Component {
             // console.log(selectedGPU);
             selectedGPU = msg.gpus[selectedGPU.gpu.id];
             let temp = selectedGPU.temp;
+            let time = Moment();
+            let diff = time.diff(this.state.lastSelection, 'minutes')
+            tempSeries.temp.push({
+                timestamp: time,
+                measurement: {
+                    value: temp.temp,
+                    label: "Temp (°C)"
+                },
+                middleLimit: {
+                    value: temp.slow_temp,
+                    label: "Slowdown Temp"
+                },
+                upperLimit: {
+                    value: temp.shut_temp,
+                    label: "Shutdown Temp"
+                }
+            });
+            tempSeries.fan.push({
+                timestamp: time,
+                measurement: {
+                    value: temp.fan,
+                    label: "Fan (%)"
+                },
+                upperLimit : {
+                    value: 100,
+                    label: "Maximum value"
+                },
+                middleLimit: {
+                    value: 0,
+                    label: "Minimum value"
+                }
+            });
+
+            if(diff > 1) {
+                tempSeries.temp.shift();
+                tempSeries.fan.shift();
+            }
             // tempSeries.push({
             //     time: Date.now(),
             //     temp: temp.temp,
@@ -94,18 +144,42 @@ export default class GPUAccordion extends React.Component {
     }
 
     updateSelected(machine, gpu) {
-        console.log(machine);
-        console.log(gpu);
         let temp = gpu.temp;
-        let tempSeries = [
-            // {
-            //     time: Date.now(),
-            //     temp: temp.temp,
-            //     shutTemp: temp.shut_temp,
-            //     slowTemp: temp.slow_temp
-            // }
-        ]
-        this.setState({currentMachine: machine, selectedGPU: gpu, tempSeries: tempSeries});
+        let lastSelection = Moment()
+        let tempSeries = {
+            temp: [{
+                timestamp: Date.now(),
+                measurement: {
+                    value: temp.temp,
+                    label: "Temp (°C)"
+                },
+                middleLimit: {
+                    value: temp.slow_temp,
+                    label: "Slowdown Temp"
+                },
+                upperLimit: {
+                    value: temp.shut_temp,
+                    label: "Shutdown Temp"
+                }
+            }],
+            fan: [{
+                timestamp: Date.now(),
+                measurement: {
+                    value: temp.fan,
+                    label: "Fan (%)"
+                },
+                upperLimit : {
+                    value: 100,
+                    label: "Maximum value"
+                },
+                middleLimit: {
+                    value: 0,
+                    label: "Minimum value"
+                }
+            }]
+        }
+        this.setState({currentMachine: machine, selectedGPU: gpu,
+                       tempSeries: tempSeries, lastSelection: lastSelection});
     }
 
     render() {

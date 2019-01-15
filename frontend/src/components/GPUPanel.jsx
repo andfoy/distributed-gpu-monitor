@@ -56,6 +56,7 @@ export default class GPUPanel extends React.Component {
                                        machine={this.props.machine}
                                        gpuid={this.props.gpu.gpu.id}
                                        mapping={graphMapping.temp}
+                                       live={this.props.tempSeries.temp}
                             />
                         </div>
                         <div className="graph-container">
@@ -64,6 +65,7 @@ export default class GPUPanel extends React.Component {
                                        machine={this.props.machine}
                                        gpuid={this.props.gpu.gpu.id}
                                        mapping={graphMapping.fan}
+                                       live={this.props.tempSeries.fan}
                             />
                         </div>
                     </Col>) : ""}

@@ -19,7 +19,7 @@ export default class GraphCard extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            selectedTime: "1h",
+            selectedTime: "now",
             dataPoints: []
         }
     }
@@ -100,12 +100,13 @@ export default class GraphCard extends React.Component {
     }
 
     render() {
+        let isLiveOn = this.state.selectedTime === "now";
         return (
             <Card>
                 <CardHeader>{this.props.title}</CardHeader>
                 <CardBody>
                     <TimeGraph mapping={this.props.mapping}
-                        series={this.state.dataPoints} />
+                        series={!isLiveOn ? this.state.dataPoints : this.props.live} />
                 </CardBody>
                 <CardFooter>
                     <ButtonGroup>
