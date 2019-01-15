@@ -1,11 +1,35 @@
 import React from 'react';
-import {Card, Col, CardDeck, CardHeader, CardBody} from 'reactstrap';
+import {Card, Col, CardDeck, CardHeader, CardBody, CardFooter} from 'reactstrap';
 import TemperatureCard from './cards/TemperatureCard';
 import MemoryCard from './cards/MemoryCard';
 import LoadCard from './cards/LoadCard';
 import ProcessCard from './cards/ProcessCard';
-import TempGraph from './graphs/TempGraph';
+import GraphCard from './cards/GraphCard';
+// import TempGraph from './graphs/TimeGraph';
 
+
+const graphMapping = {
+    "temp": {
+        "measurement": {
+            key: "value",
+            label: "Temp (°C)"
+        },
+        upperLimit: {
+            key: "shutdown",
+            label: "Shutdown Temp"
+        },
+        middleLimit: {
+            key: "slowdown",
+            label: "Slowdown Temp"
+        }
+    },
+    "fan": {
+        "measurement": {
+            key: "fan",
+            label: "Fan speed (%)"
+        }
+    }
+}
 
 export default class GPUPanel extends React.Component {
     render() {
@@ -26,16 +50,24 @@ export default class GPUPanel extends React.Component {
                         <div className="graph-container">
                             <ProcessCard processes={this.props.gpu.procs}/>
                         </div>
-                        {/* <div className="graph-container">
-                            <Card>
-                                <CardHeader>
-                                    Temperature Graph
-                                </CardHeader>
-                                <CardBody>
-                                    <TempGraph series={this.props.tempSeries}/>
-                                </CardBody>
-                            </Card>
-                        </div> */}
+                        <div className="graph-container">
+                            <GraphCard title="Temperature Graph"
+                                       name="temp"
+                                       machine={this.props.machine}
+                                       gpuid={this.props.gpu.gpu.id}
+                                       mapping={graphMapping.temp}
+                                       live={this.props.tempSeries.temp}
+                            />
+                        </div>
+                        <div className="graph-container">
+                            <GraphCard title="Fan Usage Graph"
+                                       name="fan"
+                                       machine={this.props.machine}
+                                       gpuid={this.props.gpu.gpu.id}
+                                       mapping={graphMapping.fan}
+                                       live={this.props.tempSeries.fan}
+                            />
+                        </div>
                     </Col>) : ""}
                 </CardBody>
             </Card>

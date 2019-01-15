@@ -1,18 +1,20 @@
 
 import React from 'react';
 // import {Card, CardHeader, CardBody} from 'reactstrap';
-import { VictoryChart, VictoryVoronoiContainer, VictoryTooltip, VictoryLine } from 'victory';
+import { VictoryChart, VictoryVoronoiContainer, VictoryTooltip, VictoryLine, VictoryTheme } from 'victory';
 
-export default class TempGraph extends React.Component {
+export default class TimeGraph extends React.Component {
     render() {
         return (
-            <VictoryChart height={200} width={420}
+            <VictoryChart height={220} width={420} padding={{left: 40, right: 10, top: 5, bottom: 30}}
                 scale={{ x: "time" }}
                 domainPadding={{ y: 10 }}
+                minDomain={{y: 0}}
+                theme={VictoryTheme.material}
                 containerComponent={
                     <VictoryVoronoiContainer
                         voronoiDimension="x"
-                        labels={(d) => `${d.l}: ${d.y}`}
+                        labels={(d) => `${d.l}: ${d.y.toFixed(2)}`}
                         labelComponent={
                             <VictoryTooltip
                                 cornerRadius={0}
@@ -21,7 +23,7 @@ export default class TempGraph extends React.Component {
                     />}
             >
                 <VictoryLine
-                    data={this.props.series.map(e => { return { x: e.time, y: e.temp, l: "Temp" } })}
+                    data={this.props.series.map(e => { return { x: e.timestamp, y: e.measurement.value, l: e.measurement.label } })}
                     style={{
                         data: {
                             stroke: "blue",
@@ -31,7 +33,7 @@ export default class TempGraph extends React.Component {
                     }}
                 />
                 <VictoryLine
-                    data={this.props.series.map(e => { return { x: e.time, y: e.slowTemp, l: "Slowdown Temp" } })}
+                    data={this.props.series.map(e => { return { x: e.timestamp, y: e.middleLimit.value, l:  e.middleLimit.label} })}
                     style={{
                         data: {
                             stroke: "tomato",
@@ -41,7 +43,7 @@ export default class TempGraph extends React.Component {
                     }}
                 />
                 <VictoryLine
-                    data={this.props.series.map(e => { return { x: e.time, y: e.shutTemp, l: "Shutdown Temp" } })}
+                    data={this.props.series.map(e => { return { x: e.timestamp, y: e.upperLimit.value, l: e.upperLimit.label } })}
                     style={{
                         data: {
                             stroke: "black",
