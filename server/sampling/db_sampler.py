@@ -157,8 +157,8 @@ class MongoDBSampler:
             if machine_acc_sample['last_sample'] is None:
                 machine_acc_sample['last_sample'] = current_time
             diff = current_time - machine_acc_sample['last_sample']
-            LOGGER.info(f"diff/expected: {diff.in_seconds()}/"
-                        f"{collection_info['sample_period']}")
+            LOGGER.debug(f"diff/expected: {diff.in_seconds()}/"
+                         f"{collection_info['sample_period']}")
             if diff.in_seconds() >= collection_info['sample_period']:
                 LOGGER.info(f"Updating collection {collection}")
                 await self.update_collection(

@@ -47,7 +47,7 @@ export default class GPUAccordion extends React.Component {
         gpuUpdate = Object.keys(downMachines).reduce((acc, val) => {
             // ({val, ...acc} = acc);
             delete acc[val];
-            console.log(acc);
+            // console.log(acc);
             return acc
         }, gpuUpdate);
 
@@ -82,11 +82,11 @@ export default class GPUAccordion extends React.Component {
             // console.log(selectedGPU);
             selectedGPU = msg.gpus[selectedGPU.gpu.id];
             let temp = selectedGPU.temp;
-            tempSeries.push({
-                time: Date.now(),
-                temp: temp.temp,
-                shutTemp: temp.shut_temp,
-                slowTemp: temp.slow_temp});
+            // tempSeries.push({
+            //     time: Date.now(),
+            //     temp: temp.temp,
+            //     shutTemp: temp.shut_temp,
+            //     slowTemp: temp.slow_temp});
         }
         this.setState({gpus: update, currentMachine: currentMachine,
                        selectedGPU: selectedGPU, tempSeries: tempSeries,
@@ -98,12 +98,12 @@ export default class GPUAccordion extends React.Component {
         console.log(gpu);
         let temp = gpu.temp;
         let tempSeries = [
-            {
-                time: Date.now(),
-                temp: temp.temp,
-                shutTemp: temp.shut_temp,
-                slowTemp: temp.slow_temp
-            }
+            // {
+            //     time: Date.now(),
+            //     temp: temp.temp,
+            //     shutTemp: temp.shut_temp,
+            //     slowTemp: temp.slow_temp
+            // }
         ]
         this.setState({currentMachine: machine, selectedGPU: gpu, tempSeries: tempSeries});
     }

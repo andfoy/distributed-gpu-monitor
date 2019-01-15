@@ -21,7 +21,7 @@ class GraphsHandler(tornado.web.RequestHandler):
     def set_default_headers(self):
         self.set_header('Content-Type', 'application/json')
 
-    async def get(self, *args, **kwargs):
+    async def post(self, *args, **kwargs):
         data = tornado.escape.json_decode(self.request.body)
         machine = data['machine']
         gpuid = data['gpuid']
@@ -57,7 +57,7 @@ class GraphsHandler(tornado.web.RequestHandler):
             response.append(document)
         self.write(json.dumps(response, default=json_serial))
 
-    async def post(self):
+    async def put(self):
         self.set_header('Content-Type', 'text/javascript')
         data = tornado.escape.json_decode(self.request.body)
         # data = {k: data[k] + 1 for k in data}
