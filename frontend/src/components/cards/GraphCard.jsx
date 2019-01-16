@@ -30,7 +30,7 @@ export default class GraphCard extends React.Component {
 
     componentDidUpdate(prevProps) {
         if (this.props.machine !== prevProps.machine) {
-            this.retrievePoints();
+            this.retrievePoints(this.state.selectedTime);
         } else if (this.props.gpuid !== prevProps.gpuid) {
             this.retrievePoints(this.state.selectedTime);
         }
@@ -51,7 +51,7 @@ export default class GraphCard extends React.Component {
                 start_timestamp: startISO,
                 end_timestamp: endDate.format()
             }
-            Axios.post('/graphs', requestBody).then((response) => {
+            Axios.post(process.env.NODE_ENV !== 'production' ? '/graphs' : '/gpu/graphs', requestBody).then((response) => {
                 let body = response.data;
                 let points = body.map((m) => {
                     let values = m.values[this.props.name]
