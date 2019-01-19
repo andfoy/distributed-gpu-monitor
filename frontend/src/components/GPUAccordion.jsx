@@ -93,7 +93,7 @@ export default class GPUAccordion extends React.Component {
         if(key === this.state.currentMachine) {
             // console.log(msg.gpus);
             // console.log(selectedGPU);
-            // selectedGPU = msg.gpus[selectedGPU.gpu.id];
+            selectedGPU = msg.gpus[selectedGPU.gpu.id];
             // let temp = selectedGPU.temp;
             // let time = Moment();
             // let diff = time.diff(this.state.lastSelection, 'minutes')
