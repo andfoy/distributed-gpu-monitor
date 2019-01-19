@@ -93,45 +93,45 @@ export default class GPUAccordion extends React.Component {
         if(key === this.state.currentMachine) {
             // console.log(msg.gpus);
             // console.log(selectedGPU);
-            selectedGPU = msg.gpus[selectedGPU.gpu.id];
-            let temp = selectedGPU.temp;
-            let time = Moment();
-            let diff = time.diff(this.state.lastSelection, 'minutes')
-            tempSeries.temp.push({
-                timestamp: time,
-                measurement: {
-                    value: temp.temp,
-                    label: "Temp (°C)"
-                },
-                middleLimit: {
-                    value: temp.slow_temp,
-                    label: "Slowdown Temp"
-                },
-                upperLimit: {
-                    value: temp.shut_temp,
-                    label: "Shutdown Temp"
-                }
-            });
-            tempSeries.fan.push({
-                timestamp: time,
-                measurement: {
-                    value: temp.fan,
-                    label: "Fan (%)"
-                },
-                upperLimit : {
-                    value: 100,
-                    label: "Maximum value"
-                },
-                middleLimit: {
-                    value: 0,
-                    label: "Minimum value"
-                }
-            });
+            // selectedGPU = msg.gpus[selectedGPU.gpu.id];
+            // let temp = selectedGPU.temp;
+            // let time = Moment();
+            // let diff = time.diff(this.state.lastSelection, 'minutes')
+            // tempSeries.temp.push({
+            //     timestamp: time,
+            //     measurement: {
+            //         value: temp.temp,
+            //         label: "Temp (°C)"
+            //     },
+            //     middleLimit: {
+            //         value: temp.slow_temp,
+            //         label: "Slowdown Temp"
+            //     },
+            //     upperLimit: {
+            //         value: temp.shut_temp,
+            //         label: "Shutdown Temp"
+            //     }
+            // });
+            // tempSeries.fan.push({
+            //     timestamp: time,
+            //     measurement: {
+            //         value: temp.fan,
+            //         label: "Fan (%)"
+            //     },
+            //     upperLimit : {
+            //         value: 100,
+            //         label: "Maximum value"
+            //     },
+            //     middleLimit: {
+            //         value: 0,
+            //         label: "Minimum value"
+            //     }
+            // });
 
-            if(diff > 1) {
-                tempSeries.temp.shift();
-                tempSeries.fan.shift();
-            }
+            // if(diff > 1) {
+            //     tempSeries.temp.shift();
+            //     tempSeries.fan.shift();
+            // }
             // tempSeries.push({
             //     time: Date.now(),
             //     temp: temp.temp,

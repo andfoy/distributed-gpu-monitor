@@ -11,15 +11,15 @@ import Moment from 'moment-timezone';
 const periods = {
     "7d": "week",
     "24h": "day",
-    "1h": "hour",
-    "now": "now"
+    "1h": "hour"
+    // "now": "now"
 }
 
 export default class GraphCard extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            selectedTime: "now",
+            selectedTime: "1h",
             dataPoints: []
         }
     }
