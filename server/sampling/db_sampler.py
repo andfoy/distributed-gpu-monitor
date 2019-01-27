@@ -28,7 +28,11 @@ class MongoDBSampler:
 
         server_template = {s: self.gpu_template for s in servers}
         self.acc_samples = {c: deepcopy(server_template) for c in COLLECTIONS}
-        self.current_time = pendulum.now()
+        self.current_times = {}
+        now = pendulum.now()
+        for c in COLLECTIONS:
+            collection_info = COLLECTIONS[c]
+            self.current_times[c] = now.start_of(collection_info['reference'])
 
     @property
     def reading_template(self):
@@ -55,7 +59,8 @@ class MongoDBSampler:
         # outer_template['avg'] = self.reading_template
         # outer_template['count'] = 0
 
-        time = self.current_time.start_of(collection_info['reference'])
+        time = self.current_times[collection].start_of(
+            collection_info['reference'])
         for server in self.servers:
             entries = [{
                 collection_info['key']: time,
@@ -71,7 +76,8 @@ class MongoDBSampler:
         last_timestamp = await self.db.last_renewal.find_one(
             {'collection': collection})
         generate = True
-        time = self.current_time.start_of(collection_info['reference'])
+        current_time = self.current_times[collection]
+        time = current_time.start_of(collection_info['reference'])
         if last_timestamp is not None:
             last_timestamp = pendulum.instance(last_timestamp['timestamp'])
             last_timestamp = last_timestamp.in_tz(time.timezone_name)
@@ -96,12 +102,13 @@ class MongoDBSampler:
         for collection in COLLECTIONS:
             current_time = pendulum.now()
             collection_info = COLLECTIONS[collection]
-            reference_time = self.current_time.start_of(
+            current_time = self.current_times[collection]
+            reference_time = current_time.start_of(
                 collection_info['reference'])
             diff = current_time - reference_time
             diff_value = getattr(diff, collection_info['periodicity'])
             if diff_value() >= collection_info['diff']:
-                self.current_time = current_time
+                self.current_times[collection] = reference_time
                 await self.create_document(collection, collection_info)
 
     async def update_collection(self, collection, machine, machine_acc):
