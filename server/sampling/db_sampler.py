@@ -100,10 +100,10 @@ class MongoDBSampler:
 
     async def period_renewal(self):
         for collection in COLLECTIONS:
-            current_time = pendulum.now()
+            reference_time = pendulum.now()
             collection_info = COLLECTIONS[collection]
             current_time = self.current_times[collection]
-            reference_time = current_time.start_of(
+            reference_time = reference_time.start_of(
                 collection_info['reference'])
             diff = current_time - reference_time
             diff_value = getattr(diff, collection_info['periodicity'])
@@ -131,8 +131,8 @@ class MongoDBSampler:
             fan = gpu_sample['fan']
             load = gpu_sample['load']
             common_prefix = f"values.{outer_most}.{inner_most}"
-            LOGGER.info(common_prefix)
-            LOGGER.info(gpu_sample)
+            LOGGER.debug(common_prefix)
+            LOGGER.debug(gpu_sample)
             result = await self.db[collection].update_one(
                 {
                     collection_info['key']: timestamp.start_of(
