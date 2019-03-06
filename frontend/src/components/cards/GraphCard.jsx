@@ -29,6 +29,15 @@ export default class GraphCard extends React.Component {
         this.retrievePoints(this.state.selectedTime);
     }
 
+    shouldComponentUpdate(nextProps, nextState) {
+        if (this.props.machine !== nextProps.machine) {
+            return true
+        } else if (this.props.gpuid !== nextProps.gpuid) {
+            return true
+        }
+        return false
+    }
+
     componentDidUpdate(prevProps) {
         if (this.props.machine !== prevProps.machine) {
             this.retrievePoints(this.state.selectedTime);

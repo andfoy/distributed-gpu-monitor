@@ -30,7 +30,7 @@ export default class TimePlotly extends React.Component {
         return (
             <Plot
                 data={plots}
-                layout={{ }}
+                layout={{ margin: {t: 0}}}
             />)
     }
 }
