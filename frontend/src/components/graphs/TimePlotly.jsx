@@ -15,12 +15,8 @@ export default class TimePlotly extends React.Component {
             e => { return { x: e.timestamp, y: e.middleLimit.value, l: e.middleLimit.label } })
         let upperLimits = this.props.series.map(
             e => { return { x: e.timestamp, y: e.upperLimit.value, l: e.upperLimit.label } })
-        console.log(measurements)
-        console.log(middleLimits)
-        console.log(upperLimits)
-        console.log(this.props.series)
 
-        var points = [measurements, middleLimits, upperLimits]
+        var points = [...measurements, ...middleLimits, ...upperLimits]
         let plots = points.map(p => {
             return {
                 type: 'scatter',
