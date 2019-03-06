@@ -19,7 +19,7 @@ export default class TimePlotly extends React.Component {
         var points = [measurements, middleLimits, upperLimits]
         let plots = points.map(p => {
             return {
-                type: 'scatter',
+                type: 'scattergl',
                 mode: 'lines',
                 name: p.length > 0 ? p[0].l : "",
                 x: unpack(p, "x"),
@@ -30,7 +30,7 @@ export default class TimePlotly extends React.Component {
         return (
             <Plot
                 data={plots}
-                layout={{ width: 420, height: 220 }}
+                layout={{ }}
             />)
     }
 }
