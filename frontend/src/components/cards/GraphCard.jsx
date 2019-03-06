@@ -34,6 +34,8 @@ export default class GraphCard extends React.Component {
             return true
         } else if (this.props.gpuid !== nextProps.gpuid) {
             return true
+        } else if (this.state.selectedTime !== nextState.selectedTime) {
+            return true
         }
         return false
     }
