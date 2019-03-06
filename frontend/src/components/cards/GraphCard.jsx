@@ -5,6 +5,7 @@ import {
 } from 'reactstrap';
 import Axios from 'axios';
 import TimeGraph from '../graphs/TimeGraph';
+import TimePlotly from '../graphs/TimePlotly';
 import Moment from 'moment-timezone';
 
 
@@ -105,7 +106,7 @@ export default class GraphCard extends React.Component {
             <Card>
                 <CardHeader>{this.props.title}</CardHeader>
                 <CardBody>
-                    <TimeGraph mapping={this.props.mapping}
+                    <TimePlotly mapping={this.props.mapping}
                         series={!isLiveOn ? this.state.dataPoints : this.props.live} />
                 </CardBody>
                 <CardFooter>

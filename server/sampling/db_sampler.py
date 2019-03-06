@@ -105,9 +105,11 @@ class MongoDBSampler:
             current_time = self.current_times[collection]
             reference_time = reference_time.start_of(
                 collection_info['reference'])
-            diff = current_time - reference_time
+            diff = reference_time - current_time
             diff_value = getattr(diff, collection_info['periodicity'])
             if diff_value() >= collection_info['diff']:
+                LOGGER.info(f'Current time is: {reference_time}')
+                LOGGER.info(f'Last timestamp stored was {current_time}')
                 self.current_times[collection] = reference_time
                 await self.create_document(collection, collection_info)
 
@@ -151,7 +153,7 @@ class MongoDBSampler:
                         f"{common_prefix}.modified": True
                     }
                 })
-            LOGGER.info(result.modified_count)
+            LOGGER.debug(result.modified_count)
 
     async def update_collections(self, info):
         machine = info['hostname']
