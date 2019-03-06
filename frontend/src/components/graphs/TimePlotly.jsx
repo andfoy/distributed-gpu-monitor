@@ -18,6 +18,7 @@ export default class TimePlotly extends React.Component {
         console.log(measurements)
         console.log(middleLimits)
         console.log(upperLimits)
+        console.log(this.props.series)
 
         var points = [measurements, middleLimits, upperLimits]
         let plots = points.map(p => {
