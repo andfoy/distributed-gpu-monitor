@@ -21,7 +21,7 @@ export default class TimePlotly extends React.Component {
             return {
                 type: 'scatter',
                 mode: 'lines',
-                name: p[0].l,
+                name: p[0].l ? p[0] !== undefined : "",
                 x: unpack(p, "x"),
                 y: unpack(p, "y"),
                 connectgaps: true
