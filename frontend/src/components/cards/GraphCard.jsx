@@ -21,7 +21,8 @@ export default class GraphCard extends React.Component {
         super(props)
         this.state = {
             selectedTime: "1h",
-            dataPoints: []
+            dataPoints: [],
+            updateCounter: 0
         }
     }
 
@@ -34,10 +35,11 @@ export default class GraphCard extends React.Component {
             return true
         } else if (this.props.gpuid !== nextProps.gpuid) {
             return true
+        } else if (this.state.selectedTime !== nextState.selectedTime) {
+            return true
+        } else if (this.state.updateCounter > nextState.updateCounter) {
+            return true
         }
-        // else if (this.state.selectedTime !== nextState.selectedTime) {
-        //     return true
-        // }
         return false
     }
 
@@ -106,7 +108,8 @@ export default class GraphCard extends React.Component {
                     }
                     return ret;
                 })
-                this.setState({ dataPoints: points });
+                let counter = this.state.updateCounter + 1
+                this.setState({ dataPoints: points, updateCounter: counter });
             })
         }
         this.setState({ selectedTime: namedPeriod })
