@@ -1,10 +1,10 @@
 import React from 'react'
 import {
     Card, CardFooter, CardHeader, CardBody,
-    CardSubtitle, Button, ButtonGroup
+    Button, ButtonGroup
 } from 'reactstrap';
 import Axios from 'axios';
-import TimeGraph from '../graphs/TimeGraph';
+// import TimeGraph from '../graphs/TimeGraph';
 import TimePlotly from '../graphs/TimePlotly';
 import Moment from 'moment-timezone';
 
@@ -30,22 +30,6 @@ export default class GraphCard extends React.PureComponent {
     componentDidMount() {
         this.retrievePoints(this.state.selectedTime);
     }
-
-    // shouldComponentUpdate(nextProps, nextState) {
-    //     if (this.props.machine !== nextProps.machine) {
-    //         return true
-    //     }
-    //     if (this.props.gpuid !== nextProps.gpuid) {
-    //         return true
-    //     }
-    //     if (this.state.selectedTime !== nextState.selectedTime) {
-    //         return true
-    //     }
-    //     if (this.state.updateCounter > nextState.updateCounter) {
-    //         return true
-    //     }
-    //     return false
-    // }
 
     componentDidUpdate(prevProps) {
         if (this.props.machine !== prevProps.machine) {
