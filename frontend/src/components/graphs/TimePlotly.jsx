@@ -33,7 +33,7 @@ export default class TimePlotly extends React.Component {
                 layout={{
                     margin: { t: 10, b: 30, l: 30, r: 10 },
                     showlegend: false,
-                    xaxis: { rangemode: 'tozero' }
+                    yaxis: { rangemode: 'tozero' }
                 }}
             />)
     }
