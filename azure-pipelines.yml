@@ -8,7 +8,7 @@ trigger:
 
 pool:
   name: 'default'
-
+steps:
 - script: |
     pip install flake8 pydocstyle pycodestyle mccabe
   displayName: 'Install python linters'
