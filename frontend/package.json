@@ -4,9 +4,12 @@
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",
+    "install": "^0.12.2",
     "moment-timezone": "^0.5.23",
+    "plotly.js": "^1.45.1",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
+    "react-plotly.js": "^2.3.0",
     "react-scripts": "2.1.1",
     "react-svg-gauge": "^1.0.10",
     "reactstrap": "^6.5.0",

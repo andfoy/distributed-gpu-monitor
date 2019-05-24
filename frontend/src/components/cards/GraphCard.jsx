@@ -1,26 +1,29 @@
 import React from 'react'
 import {
     Card, CardFooter, CardHeader, CardBody,
-    CardSubtitle, Button, ButtonGroup
+    Button, ButtonGroup
 } from 'reactstrap';
 import Axios from 'axios';
-import TimeGraph from '../graphs/TimeGraph';
+// import TimeGraph from '../graphs/TimeGraph';
+import TimePlotly from '../graphs/TimePlotly';
 import Moment from 'moment-timezone';
 
 
 const periods = {
     "7d": "week",
     "24h": "day",
-    "1h": "hour",
-    "now": "now"
+    "1h": "hour"
+    // "now": "now"
 }
 
-export default class GraphCard extends React.Component {
+export default class GraphCard extends React.PureComponent {
     constructor(props) {
         super(props)
         this.state = {
-            selectedTime: "now",
-            dataPoints: []
+            selectedTime: "1h",
+            dataPoints: [],
+            updateCounter: 0,
+            clickCounter: 0
         }
     }
 
@@ -30,7 +33,7 @@ export default class GraphCard extends React.Component {
 
     componentDidUpdate(prevProps) {
         if (this.props.machine !== prevProps.machine) {
-            this.retrievePoints();
+            this.retrievePoints(this.state.selectedTime);
         } else if (this.props.gpuid !== prevProps.gpuid) {
             this.retrievePoints(this.state.selectedTime);
         }
@@ -51,7 +54,7 @@ export default class GraphCard extends React.Component {
                 start_timestamp: startISO,
                 end_timestamp: endDate.format()
             }
-            Axios.post('/graphs', requestBody).then((response) => {
+            Axios.post(process.env.NODE_ENV !== 'production' ? '/graphs' : '/gpu/graphs', requestBody).then((response) => {
                 let body = response.data;
                 let points = body.map((m) => {
                     let values = m.values[this.props.name]
@@ -105,7 +108,7 @@ export default class GraphCard extends React.Component {
             <Card>
                 <CardHeader>{this.props.title}</CardHeader>
                 <CardBody>
-                    <TimeGraph mapping={this.props.mapping}
+                    <TimePlotly mapping={this.props.mapping}
                         series={!isLiveOn ? this.state.dataPoints : this.props.live} />
                 </CardBody>
                 <CardFooter>
