@@ -33,8 +33,8 @@ const graphMapping = {
 
 export default class GPUPanel extends React.Component {
     render() {
-        const { gpu, machine, tempSeries } = this.props;
-        const { gpu: {gpu: id, model}, temp, mem, load, {temp: fan}, procs} = gpu;
+        const { gpu: GPU, machine, tempSeries } = this.props;
+        const { gpu: {id, model}, temp, mem, load, {temp: fan}, procs} = GPU;
         return (
             <Card>
                 <CardHeader>
