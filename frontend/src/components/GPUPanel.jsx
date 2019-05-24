@@ -33,39 +33,41 @@ const graphMapping = {
 
 export default class GPUPanel extends React.Component {
     render() {
+        const { gpu, machine, tempSeries } = this.props;
+        const { gpu: {gpu: id, model}, temp, mem, load, {temp: fan}, procs} = gpu;
         return (
             <Card>
                 <CardHeader>
-                    {this.props.gpu !== null ? `${this.props.machine}: GPU${this.props.gpu.gpu.id} [${this.props.gpu.gpu.model}]` : "GPU Info"}
+                    {gpu !== null ? `${machine}: GPU${id} [${model}]` : "GPU Info"}
                 </CardHeader>
                 <CardBody>
-                    {this.props.gpu !== null ? (<Col xs={12}>
+                    {gpu !== null ? (<Col xs={12}>
                         <CardDeck>
-                            <TemperatureCard info={this.props.gpu.temp}/>
-                            <MemoryCard info={this.props.gpu.mem}/>
-                            <LoadCard load={this.props.gpu.load}
-                                      info={this.props.gpu.temp.fan}
+                            <TemperatureCard info={temp}/>
+                            <MemoryCard info={mem}/>
+                            <LoadCard load={load}
+                                      info={fan}
                             />
                         </CardDeck>
                         <div className="graph-container">
-                            <ProcessCard processes={this.props.gpu.procs}/>
+                            <ProcessCard processes={procs}/>
                         </div>
                         <div className="graph-container">
                             <GraphCard title="Temperature Graph"
                                        name="temp"
-                                       machine={this.props.machine}
-                                       gpuid={this.props.gpu.gpu.id}
+                                       machine={machine}
+                                       gpuid={id}
                                        mapping={graphMapping.temp}
-                                       live={this.props.tempSeries.temp}
+                                       live={tempSeries.temp}
                             />
                         </div>
                         <div className="graph-container">
                             <GraphCard title="Fan Usage Graph"
                                        name="fan"
-                                       machine={this.props.machine}
-                                       gpuid={this.props.gpu.gpu.id}
+                                       machine={machine}
+                                       gpuid={id}
                                        mapping={graphMapping.fan}
-                                       live={this.props.tempSeries.fan}
+                                       live={tempSeries.fan}
                             />
                         </div>
                     </Col>) : ""}
