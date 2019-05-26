@@ -13,8 +13,7 @@ export default class GPUCard extends React.Component {
     }
 
     render() {
-        let gpus_info = this.props.gpus;
-        let machine = this.props.hostname;
+        let { gpus: gpus_info, hostname: machine } = this.props;
         let buttons = gpus_info.map(
             g =>
             <Button key={`${machine}_${g.gpu.id}_btn`}
