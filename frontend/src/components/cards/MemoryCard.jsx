@@ -41,9 +41,9 @@ export default class MemoryCard extends React.Component {
             "fillOpacity": "1",
             "fontSize": "30px"
         }
-
-        let value = Math.round(this.props.info.used / Math.pow(1024, 3));
-        let maxValue = Math.round(this.props.info.total / Math.pow(1024, 3));
+        const { info: { used, total } } = this.props;
+        let value = Math.round(used / Math.pow(1024, 3));
+        let maxValue = Math.round(total / Math.pow(1024, 3));
         return (
             <Card>
                 <CardHeader>
@@ -54,12 +54,12 @@ export default class MemoryCard extends React.Component {
                         color={this.mapColor()}
                         width={227} height={125} label=""
                         max={maxValue}
-                        valueFormatter={value => `${this.bytesToSize(this.props.info.used)}`}
+                        valueFormatter={value => `${this.bytesToSize(used)}`}
                         valueLabelStyle={valueStyle}
                     />
                 </CardBody>
                 <CardFooter>
-                    Memory Usage: <b>{Math.round(100 * this.props.info.used / this.props.info.total, 2)}%</b>
+                    Memory Usage: <b>{Math.round(100 * used / total, 2)}%</b>
                 </CardFooter>
             </Card>
         );
