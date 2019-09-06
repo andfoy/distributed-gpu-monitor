@@ -1,7 +1,7 @@
 
 import React from 'react';
 import Sockette from 'sockette';
-import { Card, CardHeader, Alert, Row, Col } from 'reactstrap';
+import { Card, CardHeader, Alert, Row, Col, Button } from 'reactstrap';
 import Moment from 'moment-timezone';
 import GPUCard from './GPUCard';
 import GPUPanel from './GPUPanel';
@@ -204,6 +204,7 @@ export default class GPUAccordion extends React.Component {
                     {statusMsg}
                 </Alert>
                 <Row>
+                    <Button>See all machine graphs</Button>
                     <Col md={4}>
                         <div>
                             {available_gpus.map(g => {
