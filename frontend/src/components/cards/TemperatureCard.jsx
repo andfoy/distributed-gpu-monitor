@@ -6,9 +6,10 @@ import './styles/TemperatureCard.css';
 
 export default class TemperatureCard extends React.Component {
     mapColor() {
-        if (this.props.info.temp < this.props.info.slow_temp) {
+        const { info: { temp, slow_temp, shut_temp } } = this.props;
+        if (temp < slow_temp) {
             return "#009F6B"
-        } else if (this.props.info.temp >= this.props.info.slow_temp && this.props.info.temp < this.props.info.shut_temp) {
+        } else if (temp >= slow_temp && temp < shut_temp) {
             return "#FFD300"
         } else {
             return "#C40233"
@@ -28,22 +29,23 @@ export default class TemperatureCard extends React.Component {
             "fillOpacity": "1",
             "fontSize": "30px"
         }
+        const { info: { temp, slow_temp, shut_temp } } = this.props;
         return (
             <Card>
                 <CardHeader>
                     Temperature (°C)
                 </CardHeader>
                 <CardBody>
-                    <Gauge className="gauge" value={this.props.info.temp}
+                    <Gauge className="gauge" value={temp}
                         color={this.mapColor()}
                         width={227} height={125} label=""
-                        max={this.props.info.shut_temp}
+                        max={shut_temp}
                         valueFormatter={value => `${value}°C`}
                         valueLabelStyle={valueStyle}
                     />
                 </CardBody>
                 <CardFooter>
-                    Slowdown Temp: <b>{this.props.info.slow_temp}°C</b> Shutdown Temp: <b>{this.props.info.shut_temp}°C</b>
+                    Slowdown Temp: <b>{slow_temp}°C</b> Shutdown Temp: <b>{shut_temp}°C</b>
                 </CardFooter>
             </Card>
         );
