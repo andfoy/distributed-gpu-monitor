@@ -1,6 +1,0 @@
-953cdfabbcadb9102eaac0931f8c2769  lib/systemd/system/dgpumon.service
-84ba45cef8e4501ce63a1f179d4d7800  usr/bin/dgpumon
-6877e5f3a16e45f2c75d95e7c14d75c4  usr/share/doc/dgpumon/README.Debian
-7e91d26590ed9efa0c61fbd26627f642  usr/share/doc/dgpumon/changelog.Debian.gz
-e34d8fb0c005252ce83b4316b5339765  usr/share/doc/dgpumon/copyright
-3350498f6cc2f800e8fa3ada3575b102  usr/share/man/man1/dgpumon.1.gz
