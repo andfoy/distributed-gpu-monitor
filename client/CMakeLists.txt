@@ -4,11 +4,11 @@ cmake_minimum_required(VERSION 3.1)
 #                              PROJECT                              #
 #///////////////////////////////////////////////////////////////////#
 
-set(NVTOP_VERSION_MAJOR 0)
-set(NVTOP_VERSION_MINOR 2)
-set(NVTOP_VERSION_PATCH 0)
+set(DIST_GPU_MON_VERSION_MAJOR 0)
+set(DIST_GPU_MON_VERSION_MINOR 2)
+set(DIST_GPU_MON_VERSION_PATCH 0)
 
-project(nvtop
+project(dgpumon
   LANGUAGES C)
 
 # Default build type
@@ -35,14 +35,14 @@ set_property(TARGET nvml PROPERTY
 set_property(TARGET nvml PROPERTY
   INTERFACE_LINK_LIBRARIES ${NVML_LIBRARIES})
 
-set(CURSES_NEED_NCURSES TRUE)
-find_package(Curses REQUIRED)
+# set(CURSES_NEED_NCURSES TRUE)
+# find_package(Curses REQUIRED)
 
-add_library(ncurses INTERFACE IMPORTED)
-set_property(TARGET ncurses PROPERTY
-  INTERFACE_INCLUDE_DIRECTORIES ${CURSES_INCLUDE_DIRS})
-set_property(TARGET ncurses PROPERTY
-  INTERFACE_LINK_LIBRARIES ${CURSES_LIBRARIES})
+# add_library(ncurses INTERFACE IMPORTED)
+# set_property(TARGET ncurses PROPERTY
+#   INTERFACE_INCLUDE_DIRECTORIES ${CURSES_INCLUDE_DIRS})
+# set_property(TARGET ncurses PROPERTY
+#   INTERFACE_LINK_LIBRARIES ${CURSES_LIBRARIES})
 
 
   ########################################################################
@@ -136,14 +136,14 @@ add_subdirectory(src)
 #///////////////////////////////////////////////////////////////////#
 
 configure_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/manpage/nvtop.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/manpage/nvtop"
+  "${CMAKE_CURRENT_SOURCE_DIR}/manpage/dgpumon.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/manpage/dgpumon"
   IMMEDIATE @ONLY)
 install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/manpage/nvtop"
+  "${CMAKE_CURRENT_BINARY_DIR}/manpage/dgpumon"
   DESTINATION share/man/man1/
   PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
-  RENAME nvtop.1)
+  RENAME dgpumon.1)
 
 configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"

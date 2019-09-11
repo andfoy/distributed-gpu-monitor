@@ -1,19 +1,19 @@
-." Manpage for nvtop
-." Contact maxime.schmitt91@gmail.com
+." Manpage for dgpumon
+." Contact andfoy@gmail.com
 
-.TH nvtop 1 "March 2018" "Version @NVTOP_VERSION_MAJOR@.@NVTOP_VERSION_MINOR@.@NVTOP_VERSION_PATCH@" "nvtop command"
+.TH dgpumon 10 "September 2019" "Version @DIST_GPU_MON_VERSION_MAJOR@.@DIST_GPU_MON_VERSION_MINOR@.@DIST_GPU_MON_VERSION_PATCH@" "dgpumon command"
 
 .SH NAME
-nvtop \- NVIDIA GPU top
+dgpumon \- NVIDIA Distributed GPU monitor client
 
 .SH SYNOPSIS
-.B nvtop
+.B dgpumon
 \fR[\fB\-hv\fR]
 \fR[\fB\-si\fR \fIid1:id2:...\fR]
 \fR[\fB\-d\fR \fIdelay\fR]
 
 .SH DESCRIPTION
-nvtop is a ncurses\-based GPU status viewer for NVIDIA GPUs.
+dgpumon is a ZMQ\-based GPU status monitor for NVIDIA GPUs.
 
 .SH COMMAND\-LINE OPTIONS
 .TP
@@ -32,33 +32,11 @@ Colon separated list of GPU IDs to be ignored by nvtop.
 .BR \-C ", " \-\-no\-color
 Monochrome mode.
 .TP
+.BR \-C ", " \-\-no\-color
+Monochrome mode.
+.TP
 .BR \-v ", " \-\-version
 Print the version and exit.
-
-.SH INTERACTIVE COMMANDS
-.TP
-The following commands are available while in nvtop:
-.TP
-.BR Up
-Select (highlight) the previous process.
-.TP
-.BR Down
-Select (highlight) the next process.
-.TP
-.BR +
-Sort increasingly.
-.TP
-.BR -
-Sort decreasingly.
-.TP
-.BR F1
-"Kill" process: Select a signal to send to the highlighted process.
-.TP
-.BR F2
-Sort: Select the field for sorting. The current sort field is highlighted inside the header bar.
-.TP
-.BR F3 ", " q ", " Esc
-Quit.
 
 .SH BUGS
 .TP
@@ -68,4 +46,4 @@ Ask NVIDIA for better support of your hardware!
 .BR "Compatibility issues"
 Does not work with nouveau driver stack and older NVIDIA GPU for the time being.
 .SH AUTHOR
-Written by Maxime Schmitt.
+Written by Edgar Margffoy-Tuay. Based on nvtop written by Maxime Schmitt.
