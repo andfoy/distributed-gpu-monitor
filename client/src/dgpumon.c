@@ -152,7 +152,6 @@ static size_t update_mask_value(const char *str, size_t entry_mask, bool addTo) 
 int main (int argc, char **argv) {
   (void) setlocale(LC_CTYPE, "");
   openlog("dgpumon", LOG_PID, LOG_USER);
-  syslog(LOG_INFO, "Starting dgpumon");
 
   char arguments[2048];
   for(int i=0; i < argc-1; i++) {
@@ -160,7 +159,7 @@ int main (int argc, char **argv) {
     strcat(arguments, " ");
   }
 
-  syslog(LOG_INFO, arguments);
+  syslog(LOG_INFO, "Starting dgpumon with arguments %s", arguments);
 
   opterr = 0;
   int refresh_interval = 1000;
@@ -229,9 +228,7 @@ int main (int argc, char **argv) {
   char server_endpoint[40];
   sprintf(server_endpoint, "tcp://%s:%d", server_hostname, port);
 
-  char* server_message;
-  asprintf(&server_message, "Connecting to %s", server_endpoint);
-  syslog(LOG_INFO, server_message);
+  syslog(LOG_INFO, "Connecting to %s", server_endpoint);
 
   zsock_t *push_sock = zsock_new_push(server_endpoint);
 
