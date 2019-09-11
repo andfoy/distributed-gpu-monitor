@@ -1,21 +1,22 @@
 /*
  *
- * Copyright (C) 2017 Maxime Schmitt <maxime.schmitt91@gmail.com>
+ * Copyright (C) 2019 Edgar A. Margffoy-Tuay <andfoy@gmail.com>
+ * nvtop - Copyright (C) 2017 Maxime Schmitt <maxime.schmitt91@gmail.com>
  *
- * This file is part of Nvtop.
+ * This file is part of distributed-gpu-monitor.
  *
- * Nvtop is free software: you can redistribute it and/or modify
+ * distributed-gpu-monitor is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * Nvtop is distributed in the hope that it will be useful,
+ * distributed-gpu-monitor is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with nvtop.  If not, see <http://www.gnu.org/licenses/>.
+ * along with distributed-gpu-monitor.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -26,14 +27,17 @@
 // #include <ncurses.h>
 #include <getopt.h>
 #include <string.h>
+
+//
+#include <syslog.h>
 // #include <msgpack.h>
 
 #include <locale.h>
 #include <czmq.h>
 
 // #include "nvtop/interface.h"
-#include "nvtop/extract_gpuinfo.h"
-#include "nvtop/version.h"
+#include "dgpumon/extract_gpuinfo.h"
+#include "dgpumon/version.h"
 
 #define STOP_SIGNAL 0x1
 #define RESIZE_SIGNAL 0x2
@@ -52,15 +56,16 @@ static void resize_handler(int signum) {
 
 static const char helpstring[] =
 "Available options:\n"
-"  -d --delay       : Select the refresh rate (1 == 0.1s)\n"
-"  -v --version     : Print the version and exit\n"
-"  -s --gpu-select  : Column separated list of GPU IDs to monitor\n"
-"  -i --gpu-ignore  : Column separated list of GPU IDs to ignore\n"
-"  -C --no-color    : No colors\n"
-"  -h --help        : Print help and exit\n";
+"  -d --delay          : Select the refresh rate (1 == 0.1s)\n"
+"  -v --version        : Print the version and exit\n"
+"  -s --gpu-select     : Column separated list of GPU IDs to monitor\n"
+"  -i --gpu-ignore     : Column separated list of GPU IDs to ignore\n"
+"  -r --remote-server  : IP address of the monitoring server\n"
+"  -p --port           : TCP port used by the ZMQ socket\n"
+"  -h --help           : Print help and exit\n";
 
 static const char versionString[] =
-"nvtop version " NVTOP_VERSION_STRING;
+"dgpumon version " DIST_GPU_MON_VERSION_STRING;
 
 static const struct option long_opts[] = {
   {
@@ -88,12 +93,6 @@ static const struct option long_opts[] = {
     .val = 'C'
   },
   {
-    .name = "no-colour",
-    .has_arg = no_argument,
-    .flag = NULL,
-    .val = 'C'
-  },
-  {
     .name = "gpu-select",
     .has_arg = required_argument,
     .flag = NULL,
@@ -110,6 +109,12 @@ static const struct option long_opts[] = {
     .has_arg = required_argument,
     .flag = NULL,
     .val = 'r'
+  },
+  {
+    .name = "port",
+    .has_arg = required_argument,
+    .flag = NULL,
+    .val = 'p'
   },
   {0,0,0,0},
 };
@@ -146,13 +151,23 @@ static size_t update_mask_value(const char *str, size_t entry_mask, bool addTo) 
 
 int main (int argc, char **argv) {
   (void) setlocale(LC_CTYPE, "");
+  openlog("dgpumon", LOG_PID, LOG_USER);
+
+  char arguments[2048];
+  for(int i=0; i < argc-1; i++) {
+    strcat(arguments, argv[i]);
+    strcat(arguments, " ");
+  }
+
+  syslog(LOG_INFO, "Starting dgpumon with arguments %s", arguments);
 
   opterr = 0;
   int refresh_interval = 1000;
   char *selectedGPU = NULL;
   char *ignoredGPU = NULL;
-  bool use_color_if_available = true;
   char *server_hostname = "localhost";
+  int port = 6587;
+
   while (true) {
     char optchar = getopt_long(argc, argv, opts, long_opts, NULL);
     if (optchar == -1)
@@ -163,11 +178,11 @@ int main (int argc, char **argv) {
           char *endptr = NULL;
           long int delay_val = strtol(optarg, &endptr, 0);
           if (endptr == optarg) {
-            fprintf(stderr, "Error: The delay must be a positive value representing tenths of seconds\n");
+            syslog(LOG_ERR, "Error: The delay must be a positive value representing tenths of seconds\n");
             exit(EXIT_FAILURE);
           }
           if (delay_val < 0) {
-            fprintf(stderr, "Error: A negative delay requires a time machine!\n");
+            syslog(LOG_ERR, "Error: A negative delay requires a time machine!\n");
             exit(EXIT_FAILURE);
           }
           refresh_interval = (int) delay_val * 100u;
@@ -175,7 +190,13 @@ int main (int argc, char **argv) {
         break;
       case 'r':
         server_hostname = optarg;
-        printf("%s\n", server_hostname);
+        break;
+      case 'p':
+        {
+          char *endptr = NULL;
+          long int port_val = strtol(optarg, &endptr, 0);
+          port = (int) port_val;
+        }
         break;
       case 's':
         selectedGPU = optarg;
@@ -189,9 +210,6 @@ int main (int argc, char **argv) {
       case 'h':
         printf("%s\n%s", versionString, helpstring);
         exit(EXIT_SUCCESS);
-      case 'C':
-        use_color_if_available = false;
-        break;
       case ':':
       case '?':
         switch (optopt) {
@@ -208,7 +226,10 @@ int main (int argc, char **argv) {
   }
 
   char server_endpoint[40];
-  sprintf(server_endpoint, "tcp://%s:6587", server_hostname);
+  sprintf(server_endpoint, "tcp://%s:%d", server_hostname, port);
+
+  syslog(LOG_INFO, "Connecting to %s", server_endpoint);
+
   zsock_t *push_sock = zsock_new_push(server_endpoint);
 
   char hostname[1024];
@@ -252,7 +273,7 @@ int main (int argc, char **argv) {
   struct device_info *dev_infos;
   num_devices = initialize_device_info(&dev_infos, gpu_mask);
   if (num_devices == 0) {
-    fprintf(stdout, "No GPU left to monitor.\n");
+    syslog(LOG_INFO, "No GPU left to monitor.\n");
     free(dev_infos);
     return EXIT_SUCCESS;
   }
@@ -263,16 +284,10 @@ int main (int argc, char **argv) {
       biggest_name = device_name_size;
     }
   }
-  // struct nvtop_interface *interface =
-  //   initialize_curses(num_devices, biggest_name, use_color_if_available);
-  // timeout(refresh_interval);
 
   while (!(signal_bits & STOP_SIGNAL)) {
     update_device_infos(num_devices, dev_infos);
-    // if (signal_bits & RESIZE_SIGNAL) {
-    //   update_window_size_to_terminal_size(interface);
-    //   signal_bits &= ~RESIZE_SIGNAL;
-    // }
+
     zmsg_t *msg = zmsg_new();
     char* device_num;
     char* free_memory_str;
@@ -332,52 +347,10 @@ int main (int argc, char **argv) {
         zmsg_addmsg (procs_msg, &proc_msg);
       }
       zmsg_addmsg (msg, &procs_msg);
-      // zmsg_addstr(msg, "END");
-      // zstr_send (push_sock, hostname);
     }
     zmsg_send (&msg, push_sock);
     usleep(refresh_interval);
-    // draw_gpu_info_ncurses(dev_infos, interface);
 
-    // int input_char = getch();
-    // switch (input_char) {
-    //   case 27: // ESC
-    //     {
-    //       timeout(0);
-    //       int in = getch();
-    //       timeout(refresh_interval);
-    //       if (in == ERR) { // ESC alone
-    //         if (is_escape_for_quit(interface))
-    //           signal_bits |= STOP_SIGNAL;
-    //         else
-    //           interface_key(27, interface);
-    //       }
-    //       // else ALT key
-    //     }
-    //     break;
-    //   case KEY_F(3) :
-    //     if (is_escape_for_quit(interface))
-    //       signal_bits |= STOP_SIGNAL;
-    //     break;
-    //   case 'q':
-    //     signal_bits |= STOP_SIGNAL;
-    //     break;
-    //   case KEY_F(1) :
-    //   case KEY_F(2) :
-    //   case '+':
-    //   case '-':
-    //       interface_key(input_char, interface);
-    //     break;
-    //   case KEY_UP:
-    //   case KEY_DOWN:
-    //   case KEY_ENTER:
-    //   case '\n':
-    //     interface_key(input_char, interface);
-    //     break;
-    //   case ERR:
-    //   default:
-    //     break;
-    // }
   }
 
   clean_device_info(num_devices, dev_infos);

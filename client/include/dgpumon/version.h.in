@@ -20,34 +20,13 @@
  *
  */
 
-#include "dgpumon/get_process_info.h"
+#ifndef __DIST_GPU_MON_VERSION_H_
+#define __DIST_GPU_MON_VERSION_H_
 
-#include <pwd.h>
-#include <stdio.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
+#define DIST_GPU_MON_VERSION_MAJOR @DIST_GPU_MON_VERSION_MAJOR@
+#define DIST_GPU_MON_VERSION_MINOR @DIST_GPU_MON_VERSION_MINOR@
+#define DIST_GPU_MON_VERSION_PATCH @DIST_GPU_MON_VERSION_PATCH@
 
-static char pid_path[64];
+#define DIST_GPU_MON_VERSION_STRING "@DIST_GPU_MON_VERSION_MAJOR@.@DIST_GPU_MON_VERSION_MINOR@.@DIST_GPU_MON_VERSION_PATCH@"
 
-void get_username_from_pid(pid_t pid, size_t size_buffer, char *buffer) {
-  size_t written = snprintf(pid_path, 64, "/proc/%d", pid);
-  if (written == 64) {
-    buffer[0] = '\0';
-    return;
-  }
-  struct stat folder_stat;
-  int starval = stat(pid_path, &folder_stat);
-  if (starval == -1) {
-    buffer[0] = '\0';
-    return;
-  }
-  uid_t user_id = folder_stat.st_uid;
-  struct passwd *user_info = getpwuid(user_id);
-  if (user_info == NULL) {
-    buffer[0] = '\0';
-    return;
-  }
-  strncpy(buffer, user_info->pw_name, size_buffer);
-}
+#endif // __NVTOP_VERSION_H_

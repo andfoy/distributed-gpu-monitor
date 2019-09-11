@@ -1,0 +1,15 @@
+Source: dgpumon
+Section: unknown
+Priority: optional
+Maintainer: Edgar Andrés Margffoy Tuay <andfoy@gmail.com>
+Build-Depends: debhelper (>= 10), libczmq-dev (>= 4), cmake
+Standards-Version: 4.1.2
+Homepage: https://github.com/BCV-Uniandes/distributed-gpu-monitor
+Vcs-Git: https://github.com/BCV-Uniandes/distributed-gpu-monitor.git
+#Vcs-Git: https://anonscm.debian.org/git/collab-maint/dgpumon.git
+#Vcs-Browser: https://anonscm.debian.org/cgit/collab-maint/dgpumon.git
+
+Package: dgpumon
+Architecture: any
+Depends: libczmq-dev (>= 4)
+Description: ZMQ-based NVIDIA GPU monitor daemon.

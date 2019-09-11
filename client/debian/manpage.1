@@ -1,0 +1,50 @@
+." Manpage for dgpumon
+." Contact andfoy@gmail.com
+
+.TH dgpumon 10 "September 2019" "Version @DIST_GPU_MON_VERSION_MAJOR@.@DIST_GPU_MON_VERSION_MINOR@.@DIST_GPU_MON_VERSION_PATCH@" "dgpumon command"
+
+.SH NAME
+dgpumon \- NVIDIA Distributed GPU monitor client
+
+.SH SYNOPSIS
+.B dgpumon
+\fR[\fB\-hv\fR]
+\fR[\fB\-si\fR \fIid1:id2:...\fR]
+\fR[\fB\-d\fR \fIdelay\fR]
+
+.SH DESCRIPTION
+dgpumon is a ZMQ\-based GPU status monitor for NVIDIA GPUs.
+
+.SH COMMAND\-LINE OPTIONS
+.TP
+.BR \-d ", " \-\-delay =\fIdelay\fR
+Delay between updates, in tenths of seconds (\fIdelay\fR * 0.1s).
+.TP
+.BR \-h ", " \-\-help
+Print the help and exit.
+.TP
+.BR \-s ", " \-\-gpu\-select =\fIid1:...\fR
+Colon separated list of GPU IDs to be monitored by dgpumon.
+.TP
+.BR \-i ", " \-\-gpu\-ignore =\fIid1:...\fR
+Colon separated list of GPU IDs to be ignored by dgpumon.
+.TP
+.BR \-r ", " \-\-remote\-ip
+IP address of the centralized monitoring server.
+.TP
+.BR \-p ", " \-\-port
+TCP port used by the ZMQ socket.
+.TP
+.BR \-v ", " \-\-version
+Print the version and exit.
+
+.SH BUGS
+.TP
+.BR "Some fields are shown as N/A"
+Ask NVIDIA for better support of your hardware!
+.TP
+.BR "Compatibility issues"
+Does not work with nouveau driver stack and older NVIDIA GPU for the time being.
+.SH AUTHOR
+Written by Edgar Margffoy-Tuay. Based on nvtop written by Maxime Schmitt.
+
