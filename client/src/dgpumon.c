@@ -61,7 +61,7 @@ static const char helpstring[] =
 "  -s --gpu-select     : Column separated list of GPU IDs to monitor\n"
 "  -i --gpu-ignore     : Column separated list of GPU IDs to ignore\n"
 "  -r --remote-server  : IP address of the monitoring server\n"
-"  -p --port           : IP address of the monitoring server\n"
+"  -p --port           : TCP port used by the ZMQ socket\n"
 "  -h --help           : Print help and exit\n";
 
 static const char versionString[] =
@@ -151,7 +151,7 @@ static size_t update_mask_value(const char *str, size_t entry_mask, bool addTo) 
 
 int main (int argc, char **argv) {
   (void) setlocale(LC_CTYPE, "");
-  openlog("Logs", LOG_PID, LOG_USER);
+  openlog("dgpumon", LOG_PID, LOG_USER);
   syslog(LOG_INFO, "Starting dgpumon");
 
   char arguments[2048];

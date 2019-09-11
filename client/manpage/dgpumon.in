@@ -24,16 +24,16 @@ Delay between updates, in tenths of seconds (\fIdelay\fR * 0.1s).
 Print the help and exit.
 .TP
 .BR \-s ", " \-\-gpu\-select =\fIid1:...\fR
-Colon separated list of GPU IDs to be monitored by nvtop.
+Colon separated list of GPU IDs to be monitored by dgpumon.
 .TP
 .BR \-i ", " \-\-gpu\-ignore =\fIid1:...\fR
-Colon separated list of GPU IDs to be ignored by nvtop.
+Colon separated list of GPU IDs to be ignored by dgpumon.
 .TP
-.BR \-C ", " \-\-no\-color
-Monochrome mode.
+.BR \-r ", " \-\-remote\-ip
+IP address of the centralized monitoring server.
 .TP
-.BR \-C ", " \-\-no\-color
-Monochrome mode.
+.BR \-p ", " \-\-port
+TCP port used by the ZMQ socket.
 .TP
 .BR \-v ", " \-\-version
 Print the version and exit.
