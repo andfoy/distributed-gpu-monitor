@@ -28,7 +28,7 @@ export default class GPUAccordion extends React.Component {
         }
         this.checkLastContact = this.checkLastContact.bind(this);
         setInterval(this.checkLastContact, 200);
-        let url = process.env.NODE_ENV !== 'production' ? "ws://127.0.0.1:8001/gpu/" : "ws://marr.uniandes.edu.co/gpu/gpu/"
+        let url = process.env.NODE_ENV !== 'production' ? "ws://10.241.254.54:8001/gpu/" : "ws://marr.uniandes.edu.co/gpu/gpu/"
         this.socket = new Sockette(url, {
             onmessage: this.updateInfo.bind(this),
             onerror: (evt) => { console.log(evt) },
@@ -200,11 +200,17 @@ export default class GPUAccordion extends React.Component {
         }
         return (
             <Col md={12}>
+                <Row>
+                <Col md={2}>
+                <Button style={{height: "70%"}}>See all machine graphs</Button>
+                </Col>
+                <Col md={10}>
                 <Alert color={!areDownMachines ? "success" : "warning"}>
                     {statusMsg}
                 </Alert>
+                </Col>
+                </Row>
                 <Row>
-                    <Button>See all machine graphs</Button>
                     <Col md={4}>
                         <div>
                             {available_gpus.map(g => {
