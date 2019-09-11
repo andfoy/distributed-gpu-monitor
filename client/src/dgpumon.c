@@ -111,7 +111,7 @@ static const struct option long_opts[] = {
     .val = 'r'
   },
   {
-    .name = "remote-port",
+    .name = "port",
     .has_arg = required_argument,
     .flag = NULL,
     .val = 'p'
@@ -192,8 +192,12 @@ int main (int argc, char **argv) {
       case 'r':
         server_hostname = optarg;
         break;
-      case 'r':
-        port = optarg;
+      case 'p':
+        {
+          char *endptr = NULL;
+          long int port_val = strtol(optarg, &endptr, 0);
+          port = (int) port_val;
+        }
         break;
       case 's':
         selectedGPU = optarg;
