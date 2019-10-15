@@ -36,7 +36,6 @@ export default class AllMachinesPanel extends React.Component {
     }
 
     _handleKeyDown = (event) => {
-        console.log(event)
         const { key } = event
         const handler = this.handlers[key]
         if(handler) {
