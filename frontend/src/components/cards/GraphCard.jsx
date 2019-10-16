@@ -104,12 +104,18 @@ export default class GraphCard extends React.PureComponent {
 
     render() {
         let isLiveOn = this.state.selectedTime === "now";
+        const { yaxis } = this.props
         return (
             <Card>
                 <CardHeader>{this.props.title}</CardHeader>
                 <CardBody>
                     <TimePlotly mapping={this.props.mapping}
-                        series={!isLiveOn ? this.state.dataPoints : this.props.live} />
+                        series={!isLiveOn ? this.state.dataPoints : this.props.live}
+                        title={this.props.graphTitle}
+                        xaxis={this.props.xaxis}
+                        yaxis={this.props.yaxis}
+                        showLegend={this.props.showLegend}
+                    />
                 </CardBody>
                 <CardFooter>
                     <ButtonGroup>

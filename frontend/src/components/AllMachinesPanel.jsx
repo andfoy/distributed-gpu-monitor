@@ -86,6 +86,9 @@ export default class AllMachinesPanel extends React.Component {
                 <Row>
                     <Card className="all-machines-top">
                         <CardHeader>Graphs</CardHeader>
+                        <CardBody>
+
+                        </CardBody>
                     </Card>
                 </Row>
             </Col>

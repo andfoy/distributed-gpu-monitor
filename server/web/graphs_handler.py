@@ -14,6 +14,49 @@ def json_serial(obj):
     raise TypeError("Type %s not serializable" % type(obj))
 
 
+class MultipleGraphsHandler(tornado.web.RequestHandler):
+    def initialize(self):
+        self.db = self.application.mongo.gpu
+
+    async def post(self, *args, **kwargs):
+        data = tornado.escape.json_decode(self.request.body)
+        machine = data['machine']
+        start_timestamp = pendulum.parse(data['start_timestamp'])
+        end_timestamp = pendulum.parse(data['end_timestamp'])
+        period = data['period']
+        collection = f'{period}_samples'
+        query = [
+            {"$match": {
+                f'timestamp_{period}': {
+                    '$gte': start_timestamp,
+                    '$lte': end_timestamp
+                },
+                'machine': machine
+            }},
+            {'$project': {
+                'values': {'$objectToArray': '$values'},
+                'gpuid': '$gpuid'
+            }},
+            {'$unwind': '$values'},
+            {'$project': {
+                'values': {'$objectToArray': '$values.v'},
+                'gpuid': 1
+            }},
+            {'$unwind': '$values'},
+            {'$project': {'values': "$values.v", 'gpuid': 1}},
+            {'$match': {'values.modified': True}},
+            {'$group': {
+                '_id': '$gpuid',
+                'values': {'$push': '$values'}
+            }}
+        ]
+        response = []
+        async for document in self.db[collection].aggregate(query):
+            document['_id'] = str(document['_id'])
+            response.append(document)
+        self.write(json.dumps(response, default=json_serial))
+
+
 class GraphsHandler(tornado.web.RequestHandler):
     def initialize(self):
         self.db = self.application.mongo.gpu

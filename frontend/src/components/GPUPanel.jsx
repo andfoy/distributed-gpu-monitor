@@ -57,20 +57,28 @@ export default class GPUPanel extends React.Component {
                         </div>
                         <div className="graph-container">
                             <GraphCard title="Temperature Graph"
+                                       graphTitle={`Temperature (${machine}: GPU${id})`}
                                        name="temp"
                                        machine={machine}
                                        gpuid={id}
                                        mapping={graphMapping.temp}
                                        live={tempSeries.temp}
+                                       showLegend={false}
+                                       xaxis="Timestamp"
+                                       yaxis="Temperature (°C)"
                             />
                         </div>
                         <div className="graph-container">
                             <GraphCard title="Fan Usage Graph"
+                                       graphTitle={`Fan Usage (${machine}: GPU${id})`}
                                        name="fan"
                                        machine={machine}
                                        gpuid={id}
                                        mapping={graphMapping.fan}
                                        live={tempSeries.fan}
+                                       showLegend={false}
+                                       xaxis="Timestamp"
+                                       yaxis="Fan (%)"
                             />
                         </div>
                     </Col>) : ""}

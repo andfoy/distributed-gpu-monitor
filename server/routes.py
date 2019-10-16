@@ -22,7 +22,8 @@ REST = []
 # Define new web rendering route associations
 WEB = [
     (r'/', web.main_handler.MainHandler),
-    (r'/graphs', web.graphs_handler.GraphsHandler)
+    (r'/graphs', web.graphs_handler.GraphsHandler),
+    (r'/allgraphs', web.graphs_handler.MultipleGraphsHandler)
 ]
 
 WS = [

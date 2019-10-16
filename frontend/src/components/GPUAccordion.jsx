@@ -47,7 +47,7 @@ export default class GPUAccordion extends React.Component {
         var lastSelection = this.state.lastSelection;
         var lastContact = this.state.lastContact;
         let downMachines = machines.reduce((acc, val) => {
-            if (this.state.lastContact[val] === null || Date.now() - this.state.lastContact[val] > 5000) {
+            if (this.state.lastContact[val] === null || Date.now() - this.state.lastContact[val] > 10000) {
                 acc[val] = val;
             }
             return acc;
