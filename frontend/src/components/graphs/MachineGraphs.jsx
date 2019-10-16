@@ -3,6 +3,7 @@ import React from 'react'
 import Axios from 'axios'
 import { Card, CardHeader, Row, Col, Button, CardBody, ButtonGroup } from 'reactstrap'
 import MultiLineGraph from './MultiLineGraph'
+import Moment from 'moment-timezone'
 
 const GRAPH_ENDPOINT = process.env.NODE_ENV !== 'production' ? '/allgraphs' : '/gpu/allgraphs'
 

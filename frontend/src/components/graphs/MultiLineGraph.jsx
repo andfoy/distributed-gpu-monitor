@@ -15,8 +15,8 @@ export default class MultiLineGraph extends React.Component {
                 type: 'scattergl',
                 mode: 'lines',
                 name: line.length > 0 ? line[0].label : "",
-                x: unpack(p, "timestamp"),
-                y: unpack(p, "value"),
+                x: unpack(line, "timestamp"),
+                y: unpack(line, "value"),
                 connectgaps: true
             }
         })
