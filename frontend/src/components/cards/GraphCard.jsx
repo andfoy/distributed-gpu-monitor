@@ -12,7 +12,7 @@ import Moment from 'moment-timezone';
 const periods = {
     "7d": "week",
     "24h": "day",
-    "1h": "hour"
+    // "1h": "hour"
     // "now": "now"
 }
 
@@ -20,7 +20,7 @@ export default class GraphCard extends React.PureComponent {
     constructor(props) {
         super(props)
         this.state = {
-            selectedTime: "1h",
+            selectedTime: "24h",
             dataPoints: [],
             updateCounter: 0,
             clickCounter: 0
@@ -44,15 +44,18 @@ export default class GraphCard extends React.PureComponent {
         if (timePeriod !== "now") {
             let tz = Moment.tz.guess()
             let now = Moment().tz(tz);
-            let startDate = now.startOf(timePeriod);
+            // let startDate = now.startOf(timePeriod);
+            let endDate = now
+            let endISO = endDate.format()
+            // let endDate = startDate.add(1, timePeriod);
+            let startDate = endDate.subtract(1, timePeriod)
             let startISO = startDate.format()
-            let endDate = startDate.add(1, timePeriod);
             let requestBody = {
                 machine: this.props.machine,
                 gpuid: this.props.gpuid,
                 period: timePeriod,
                 start_timestamp: startISO,
-                end_timestamp: endDate.format()
+                end_timestamp: endISO
             }
             Axios.post(process.env.NODE_ENV !== 'production' ? '/graphs' : '/gpu/graphs', requestBody).then((response) => {
                 let body = response.data;
@@ -104,12 +107,18 @@ export default class GraphCard extends React.PureComponent {
 
     render() {
         let isLiveOn = this.state.selectedTime === "now";
+        const { yaxis } = this.props
         return (
             <Card>
                 <CardHeader>{this.props.title}</CardHeader>
                 <CardBody>
                     <TimePlotly mapping={this.props.mapping}
-                        series={!isLiveOn ? this.state.dataPoints : this.props.live} />
+                        series={!isLiveOn ? this.state.dataPoints : this.props.live}
+                        title={this.props.graphTitle}
+                        xaxis={this.props.xaxis}
+                        yaxis={this.props.yaxis}
+                        showLegend={this.props.showLegend}
+                    />
                 </CardBody>
                 <CardFooter>
                     <ButtonGroup>

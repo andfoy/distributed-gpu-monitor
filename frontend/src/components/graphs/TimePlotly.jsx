@@ -1,5 +1,6 @@
 
 import React from 'react';
+import Plotly from 'plotly.js';
 import Plot from 'react-plotly.js';
 
 
@@ -8,6 +9,11 @@ function unpack(series, key) {
 }
 
 export default class TimePlotly extends React.Component {
+    constructor(props) {
+        super(props)
+        this.plotRef = React.createRef();
+    }
+
     render() {
         let measurements = this.props.series.map(
             e => { return { x: e.timestamp, y: e.measurement.value, l: e.measurement.label } })
@@ -31,10 +37,13 @@ export default class TimePlotly extends React.Component {
             <Plot
                 data={plots}
                 layout={{
-                    margin: { t: 10, b: 30, l: 30, r: 10 },
-                    showlegend: false,
-                    yaxis: { rangemode: 'tozero' }
-                }}
+                    margin: { t: 30, b: 40, l: 50, r: 30 },
+                    showlegend: this.props.showLegend,
+                    yaxis: { rangemode: 'tozero', title: { text: this.props.yaxis } },
+                    xaxis: { title: { text: this.props.xaxis } },
+                    title: this.props.title
+                }
+                }
             />)
     }
 }

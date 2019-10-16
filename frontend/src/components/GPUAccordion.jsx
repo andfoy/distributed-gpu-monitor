@@ -1,11 +1,12 @@
 
 import React from 'react';
 import Sockette from 'sockette';
-import { Card, CardHeader, Alert, Row, Col } from 'reactstrap';
+import { Card, CardHeader, Alert, Row, Col, Button } from 'reactstrap';
 import Moment from 'moment-timezone';
 import GPUCard from './GPUCard';
 import GPUPanel from './GPUPanel';
 import './styles/GPUAccordion.css';
+import AllMachinesPanel from './AllMachinesPanel';
 
 export default class GPUAccordion extends React.Component {
     constructor(props) {
@@ -19,6 +20,7 @@ export default class GPUAccordion extends React.Component {
                 temp: [],
                 fan: []
             },
+            viewGraphs: false,
             lastSelection: null,
             downMachines: {},
             lastContact: machines.reduce((acc, val) => {
@@ -28,24 +30,24 @@ export default class GPUAccordion extends React.Component {
         }
         this.checkLastContact = this.checkLastContact.bind(this);
         setInterval(this.checkLastContact, 200);
-        let url = process.env.NODE_ENV !== 'production' ? "ws://127.0.0.1:8001/gpu/" : "ws://marr.uniandes.edu.co/gpu/gpu/"
+        let url = process.env.NODE_ENV !== 'production' ? "ws://10.241.254.54:8001/gpu/" : "ws://marr.uniandes.edu.co/gpu/gpu/"
         this.socket = new Sockette(url, {
             onmessage: this.updateInfo.bind(this),
             onerror: (evt) => { console.log(evt) },
-            onclose: () => {console.log("Socket closed")}
+            onclose: () => { console.log("Socket closed") }
         });
     }
 
     checkLastContact() {
         var machines = Object.keys(this.state.lastContact);
-        var gpuUpdate = {...this.state.gpus};
+        var gpuUpdate = { ...this.state.gpus };
         var selectedGPU = this.state.selectedGPU;
         var currentMachine = this.state.currentMachine;
         var tempSeries = this.state.tempSeries;
         var lastSelection = this.state.lastSelection;
         var lastContact = this.state.lastContact;
         let downMachines = machines.reduce((acc, val) => {
-            if(this.state.lastContact[val] === null || Date.now() - this.state.lastContact[val] > 5000) {
+            if (this.state.lastContact[val] === null || Date.now() - this.state.lastContact[val] > 10000) {
                 acc[val] = val;
             }
             return acc;
@@ -58,7 +60,7 @@ export default class GPUAccordion extends React.Component {
             return acc
         }, gpuUpdate);
 
-        if(downMachines[currentMachine] !== undefined) {
+        if (downMachines[currentMachine] !== undefined) {
             lastContact[currentMachine] = null;
             currentMachine = null;
             selectedGPU = null;
@@ -68,79 +70,44 @@ export default class GPUAccordion extends React.Component {
             };
             lastSelection = null;
         }
-        this.setState({gpus: gpuUpdate, downMachines: downMachines,
-                       selectedGPU: selectedGPU, tempSeries: tempSeries,
-                       currentMachine: currentMachine, lastSelection: lastSelection,
-                       lastContact: lastContact});
+        this.setState({
+            gpus: gpuUpdate, downMachines: downMachines,
+            selectedGPU: selectedGPU, tempSeries: tempSeries,
+            currentMachine: currentMachine, lastSelection: lastSelection,
+            lastContact: lastContact
+        });
     }
 
     updateInfo(evt) {
         let msg = JSON.parse(evt.data);
         let key = msg['hostname'];
-        let update = {...this.state.gpus};
+        let update = { ...this.state.gpus };
         update[key] = msg;
         var currentMachine = this.state.currentMachine;
         var selectedGPU = this.state.selectedGPU;
         var tempSeries = this.state.tempSeries;
-        var lastContact = {...this.state.lastContact};
-        let downMachines = {...this.state.downMachines};
+        var lastContact = { ...this.state.lastContact };
+        let downMachines = { ...this.state.downMachines };
         lastContact[key] = Date.now();
 
-        if(downMachines[key] !== undefined) {
-            ({key, ...downMachines} = downMachines);
+        if (downMachines[key] !== undefined) {
+            ({ key, ...downMachines } = downMachines);
         }
 
-        if(key === this.state.currentMachine) {
+        if (key === this.state.currentMachine) {
             // console.log(msg.gpus);
             // console.log(selectedGPU);
             selectedGPU = msg.gpus[selectedGPU.gpu.id];
-            // let temp = selectedGPU.temp;
-            // let time = Moment();
-            // let diff = time.diff(this.state.lastSelection, 'minutes')
-            // tempSeries.temp.push({
-            //     timestamp: time,
-            //     measurement: {
-            //         value: temp.temp,
-            //         label: "Temp (°C)"
-            //     },
-            //     middleLimit: {
-            //         value: temp.slow_temp,
-            //         label: "Slowdown Temp"
-            //     },
-            //     upperLimit: {
-            //         value: temp.shut_temp,
-            //         label: "Shutdown Temp"
-            //     }
-            // });
-            // tempSeries.fan.push({
-            //     timestamp: time,
-            //     measurement: {
-            //         value: temp.fan,
-            //         label: "Fan (%)"
-            //     },
-            //     upperLimit : {
-            //         value: 100,
-            //         label: "Maximum value"
-            //     },
-            //     middleLimit: {
-            //         value: 0,
-            //         label: "Minimum value"
-            //     }
-            // });
-
-            // if(diff > 1) {
-            //     tempSeries.temp.shift();
-            //     tempSeries.fan.shift();
-            // }
-            // tempSeries.push({
-            //     time: Date.now(),
-            //     temp: temp.temp,
-            //     shutTemp: temp.shut_temp,
-            //     slowTemp: temp.slow_temp});
         }
-        this.setState({gpus: update, currentMachine: currentMachine,
-                       selectedGPU: selectedGPU, tempSeries: tempSeries,
-                       lastContact: lastContact, downMachines: downMachines});
+        this.setState({
+            gpus: update, currentMachine: currentMachine,
+            selectedGPU: selectedGPU, tempSeries: tempSeries,
+            lastContact: lastContact, downMachines: downMachines
+        });
+    }
+
+    componentWillUnmount() {
+        this.socket.close()
     }
 
     updateSelected(machine, gpu) {
@@ -168,7 +135,7 @@ export default class GPUAccordion extends React.Component {
                     value: temp.fan,
                     label: "Fan (%)"
                 },
-                upperLimit : {
+                upperLimit: {
                     value: 100,
                     label: "Maximum value"
                 },
@@ -178,21 +145,29 @@ export default class GPUAccordion extends React.Component {
                 }
             }]
         }
-        this.setState({currentMachine: machine, selectedGPU: gpu,
-                       tempSeries: tempSeries, lastSelection: lastSelection});
+        this.setState({
+            currentMachine: machine, selectedGPU: gpu,
+            tempSeries: tempSeries, lastSelection: lastSelection
+        });
+    }
+
+    showAllGraphs = () => {
+        const { viewGraphs: currentState } = this.state
+        this.setState({viewGraphs: !currentState})
     }
 
     render() {
+        const { viewGraphs, gpus: allMachines } = this.state
         var available_gpus = Object.keys(this.state.gpus);
         available_gpus = available_gpus.sort();
         var clickFunc = (machine, gpu) => this.updateSelected.bind(this, machine, gpu);
         var downMachines = Object.keys(this.state.downMachines);
         var areDownMachines = downMachines.length > 0;
         var statusMsg = "All systems online!";
-        if(areDownMachines) {
+        if (areDownMachines) {
             let [first, ...rest] = downMachines;
             statusMsg = `${first} is down!`;
-            if(rest.length > 0) {
+            if (rest.length > 0) {
                 let head = downMachines.slice(0, -1);
                 let last = downMachines[downMachines.length - 1];
                 statusMsg = `${head.join(", ")} and ${last} are down!`;
@@ -200,10 +175,19 @@ export default class GPUAccordion extends React.Component {
         }
         return (
             <Col md={12}>
-                <Alert color={!areDownMachines ? "success" : "warning"}>
-                    {statusMsg}
-                </Alert>
                 <Row>
+                    <Col md={2}>
+                        <Button style={{ height: "70%" }} onClick={this.showAllGraphs}>
+                            {!viewGraphs ? "All machines view" : "Individual view"}
+                        </Button>
+                    </Col>
+                    <Col md={10}>
+                        <Alert color={!areDownMachines ? "success" : "warning"}>
+                            {statusMsg}
+                        </Alert>
+                    </Col>
+                </Row>
+                {!viewGraphs && <Row>
                     <Col md={4}>
                         <div>
                             {available_gpus.map(g => {
@@ -214,7 +198,7 @@ export default class GPUAccordion extends React.Component {
                                             {gpu.hostname}
                                         </CardHeader>
                                         <GPUCard gpus={gpu.gpus} hostname={gpu.hostname}
-                                                 updateDisplay={clickFunc}/>
+                                            updateDisplay={clickFunc} />
                                     </Card>
                                 )
                             })}
@@ -222,11 +206,12 @@ export default class GPUAccordion extends React.Component {
                     </Col>
                     <Col md={8}>
                         <GPUPanel machine={this.state.currentMachine}
-                                  gpu={this.state.selectedGPU}
-                                  tempSeries={this.state.tempSeries}
-                                  />
+                            gpu={this.state.selectedGPU}
+                            tempSeries={this.state.tempSeries}
+                        />
                     </Col>
-                </Row>
+                </Row>}
+                {viewGraphs && <AllMachinesPanel machines={allMachines}/>}
             </Col>
         );
     }

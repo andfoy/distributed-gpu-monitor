@@ -1,0 +1,10 @@
+
+.all-machines-row {
+    justify-content: center;
+    align-content: stretch;
+}
+
+.all-machines-top {
+    align-content: stretch;
+    flex-grow: 1;
+}
