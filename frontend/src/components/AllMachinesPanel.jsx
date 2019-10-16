@@ -85,7 +85,15 @@ export default class AllMachinesPanel extends React.Component {
                 </Row>
                 <Row>
                     <Card className="all-machines-top">
-                        <CardHeader>Graphs</CardHeader>
+                        <CardHeader>{`Graphs for ${currentSelection} (7-day)`}</CardHeader>
+                        <CardBody>
+
+                        </CardBody>
+                    </Card>
+                </Row>
+                <Row>
+                    <Card className="all-machines-top">
+                    <CardHeader>{`Graphs for ${currentSelection} (24-hour)`}</CardHeader>
                         <CardBody>
 
                         </CardBody>
