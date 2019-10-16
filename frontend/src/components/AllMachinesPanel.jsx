@@ -2,6 +2,7 @@
 import React from 'react'
 import { Card, CardHeader, Row, Col, Button, CardBody, ButtonGroup } from 'reactstrap'
 import './styles/AllMachinesPanel.css'
+import MachineGraphs from './graphs/MachineGraphs'
 
 const mod = (n, m) => {
     return ((n % m) + m) % m
@@ -87,7 +88,7 @@ export default class AllMachinesPanel extends React.Component {
                     <Card className="all-machines-top">
                         <CardHeader>{`Graphs for ${currentSelection} (7-day)`}</CardHeader>
                         <CardBody>
-
+                            <MachineGraphs selectedTime="week" machine={currentSelection}/>
                         </CardBody>
                     </Card>
                 </Row>
@@ -95,7 +96,7 @@ export default class AllMachinesPanel extends React.Component {
                     <Card className="all-machines-top">
                     <CardHeader>{`Graphs for ${currentSelection} (24-hour)`}</CardHeader>
                         <CardBody>
-
+                            <MachineGraphs selectedTime="day" machine={currentSelection}/>
                         </CardBody>
                     </Card>
                 </Row>
