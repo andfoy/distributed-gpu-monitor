@@ -26,10 +26,17 @@ export default class MultiLineGraph extends React.Component {
                 layout={{
                     margin: { t: 30, b: 40, l: 50, r: 30 },
                     showlegend: showLegend,
+                    width: 620,
+                    height: 500,
                     yaxis: { rangemode: 'tozero', title: { text: yaxis } },
                     xaxis: { title: { text: xaxis } },
-                    title: title
+                    title: title,
+                    autosize: true,
+                    legend: {
+                        orientation: "h"
+                    }
                 }}
+                useResizeHandler
             />)
     }
 }

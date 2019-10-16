@@ -43,7 +43,7 @@ export default class MachineGraphs extends React.PureComponent {
             start_timestamp: startISO,
             end_timestamp: endISO
         }
-        Axios.post(GRAPH_ENDPOINT).then((response) => {
+        Axios.post(GRAPH_ENDPOINT, requestBody).then((response) => {
             const machineData = response.data
             let minSlowdown = Infinity
             let maxShutdown = 0
@@ -106,7 +106,7 @@ export default class MachineGraphs extends React.PureComponent {
 
             const tempGraph = [...tempSeries, minTempBounds, maxTempBounds]
             const fanGraph = [...fanSeries, maxFanBounds]
-            this.setState({ tempPoints: tempSeries, })
+            this.setState({ tempGraph: tempGraph, fanGraph: fanGraph})
         })
     }
 
@@ -118,7 +118,7 @@ export default class MachineGraphs extends React.PureComponent {
                 <MultiLineGraph lines={tempGraph}
                     title={`Temperature (${machine})`}
                     showLegend={true}
-                    xaxis="Timestamp"
+                    xaxis=""
                     yaxis="Temperature (°C)"
                 />
             </Col>
@@ -126,7 +126,7 @@ export default class MachineGraphs extends React.PureComponent {
                 <MultiLineGraph lines={fanGraph}
                     title={`Fan Usage (${machine})`}
                     showLegend={true}
-                    xaxis="Timestamp"
+                    xaxis=""
                     yaxis="Fan (%)"
                 />
             </Col>
